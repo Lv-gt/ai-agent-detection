@@ -1,19 +1,29 @@
 # 🤖 PR Agent Detector
 
-离线、可审计的 GitHub Pull Request 编码 Agent 痕迹检测工具。工具只读取已经采集好的 SQLite 数据库。
+离线、可审计的 GitHub Pull Request 编码 Agent 痕迹检测工具。工具只读取已经采集好的 SQLite 数据库，不使用 LLM、embedding、NLP 或置信度打分。
 
 ## 检测范围
 
-主要检测：
+只检测 PR 范围内可直接观察到的痕迹，共四条通道：
 
-- PR 作者与 commit 作者中的已知 Agent 身份；
-- PR body 与 commit message 中的 `Co-Authored-By:` Agent；
-- PR body 与 commit message 中明确的 Agent 使用声明；自由文本只接受明确的编码 Agent / Agent 模式名称，不把裸模型名、泛化 AI 标记或 Agent 辅助工具自动视为 Agent；
-- PR body 与 commit message 中已登记的 Agent 任务链接；
-- PR head branch 与当前 labels 中的 Agent 规则。
+- **作者身份**：PR 作者与每个 commit 作者的 login / name / email；
+- **文本归因**：PR body 与 commit message 中写出 Agent 名称的归因语句；
+- **branch**：PR head branch；
+- **label**：PR 当前 labels。
+
+文本归因要求 Agent 名称紧跟在归因短语之后，例如：
+
+```text
+🤖 Generated with Claude Code
+Implemented using Qwen Code
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+自由文本只接受能够明确指向编码 Agent 或 Agent 模式的产品名与官方 trailer；不把裸模型名、泛化 AI 标记或 Agent 辅助工具自动视为 Agent。普通提及（如 `Support Kimi Code models`）不命中。
+
+任意一条通道命中，该 PR 即记为 `agent_trace_detected`；否则为 `no_trace_detected`；数据本身未完成采集时输出 `unavailable`。
 
 工具同时区分痕迹属于目标 PR 作者、其他 commit 作者、未知行为者，还是仅来自 branch/label 元数据。
-
 
 ## 🚀 使用
 
@@ -94,9 +104,12 @@ python scripts/cli.py export <output_dir>
 - `detection.sqlite3`：PR 结果与逐条证据；
 - `audit.json`：结果一致性审计；
 - `run_context.json`：本次运行使用的规则快照与输入信息；
-- `exports/pr_labels.csv.gz`：PR 级结果；
+- `exports/pr_results.csv.gz`：PR 级结果；
 - `exports/evidence.jsonl.gz`：逐条检测证据；
 - `exports/tool_catalog.json`：Agent 规则目录；
-- `exports/rule_contributions.json`：各规则命中的 PR 数。
+- `exports/rule_contributions.json`：各规则命中的 PR 数；
+- `exports/export_summary.json`：本次导出对应的审计摘要。
 
-规则配置位于 `config/rules/`。检测规则见 `DETECTION_RULES.md`，输入接口见 `INPUT_SCHEMA.md`。
+## 规则维护
+
+规则配置位于 `config/rules/`。检测规则见 `DETECTION_RULES.md`，Agent 规则清单见 `AGENT_RULES.md`，输入接口见 `INPUT_SCHEMA.md`。

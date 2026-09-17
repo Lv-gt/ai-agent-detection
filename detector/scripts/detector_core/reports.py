@@ -170,14 +170,11 @@ def export(output):
         "other_actor_agent_trace", "other_actor_tools",
         "unknown_actor_agent_trace", "unknown_actor_tools",
         "metadata_agent_trace", "metadata_tools", "categories",
-        "known_non_agent_automation_actor_count", "unknown_bot_actor_count", "evidence_count",
-        "commit_total_count", "commit_observed_count", "commit_observation_status",
-        "label_observed_count", "missing_commit_author_email_count",
-        "author_identity_missing", "empty_pr_body", "created_at", "collected_at_utc", "unavailable_reason",
+        "evidence_count", "unavailable_reason",
     ]
 
     with readonly(output / "detection.sqlite3") as c:
-        with gzip.open(dest / "pr_labels.csv.gz", "wt", encoding="utf-8-sig", newline="") as handle:
+        with gzip.open(dest / "pr_results.csv.gz", "wt", encoding="utf-8-sig", newline="") as handle:
             writer = csv.DictWriter(handle, fieldnames=fields, extrasaction="ignore")
             writer.writeheader()
             for record in c.execute("SELECT payload FROM pr_results ORDER BY pr_id"):
@@ -196,12 +193,13 @@ def export(output):
             "rows": contributions,
         })
 
+        from .registry import Registry
+        registry = Registry(read_json(output / "run_context.json")["snapshot"])
+
         with gzip.open(dest / "evidence.jsonl.gz", "wt", encoding="utf-8") as handle:
             for record in c.execute("SELECT payload FROM evidence ORDER BY id"):
                 handle.write(record[0] + "\n")
 
-    from .registry import Registry
-    registry = Registry(read_json(output / "run_context.json")["snapshot"])
     write_json(dest / "tool_catalog.json", list(registry.catalog.values()))
     write_json(dest / "export_summary.json", report)
     return report

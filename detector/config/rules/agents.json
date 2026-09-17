@@ -1,1141 +1,621 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "tools": [
     {
       "name": "Abacus",
-      "aliases": [
-        "Abacus"
+      "author_patterns": [],
+      "text_patterns": [
+        "Abacus\\.AI CLI <agent@abacus\\.ai>"
       ],
-      "identity": {
-        "logins": [
-          "abacus-ai-automation"
-        ],
-        "emails": [
-          "agent@abacus.ai"
-        ],
-        "names": [
-          "abacus-ai-automation[bot]"
-        ]
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Aider",
-      "aliases": [
-        "Aider"
+      "author_patterns": [
+        "\\(aider\\)"
       ],
-      "identity": {
-        "logins": [
-          "aider"
-        ],
-        "emails": [
-          "aider@aider.chat"
-        ],
-        "names": [
-          "aider"
-        ]
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "text_patterns": [
+        "Aider .*<aider@aider\\.chat>"
+      ],
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Alibaba Lingma",
-      "aliases": [
-        "Alibaba Lingma",
-        "Tongyi Lingma"
+      "author_patterns": [],
+      "text_patterns": [
+        "Lingma"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [
-        "https://www.alibabacloud.com/help/en/lingma/"
-      ],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Amazon Q",
-      "aliases": [
-        "Amazon Q"
+      "author_patterns": [
+        "amazon-q-developer\\[bot\\]"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "text_patterns": [
+        "Amazon Q Developer",
+        "amazon-q-developer\\[bot\\] <208079219\\+amazon-q-developer\\[bot\\]@users\\.noreply\\.github\\.com>"
+      ],
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Amp",
-      "aliases": [
-        "Amp"
+      "author_patterns": [
+        "ampagent",
+        "amp@ampcode\\.com"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [
-          "amp@ampcode.com"
-        ],
-        "names": []
-      },
-      "branches": [],
-      "labels": [
-        "^amp$"
+      "text_patterns": [
+        "Amp",
+        "Amp <amp@ampcode\\.com>"
       ],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
-      "name": "Atlassian Rovodev",
-      "aliases": [
-        "Atlassian Rovodev"
+      "name": "Atlassian Rovo Dev",
+      "author_patterns": [],
+      "text_patterns": [
+        "Rovo Dev",
+        "Rovodev"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [
+        "(?:^|/)rovodev/"
+      ],
+      "label_patterns": []
     },
     {
       "name": "Augment Code",
-      "aliases": [
-        "Augment Code"
+      "author_patterns": [],
+      "text_patterns": [
+        "Augment Code",
+        "Augment Agent",
+        "Augment (?:Code|Agent) <[^>]+@augmentcode\\.com>"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Baidu Comate",
-      "aliases": [
-        "Baidu Comate",
-        "Comate"
-      ],
-      "identity": {
-        "logins": [],
-        "emails": [],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [
-        "https://comate.baidu.com/"
-      ],
-      "task_links": []
+      "author_patterns": [],
+      "text_patterns": [],
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Brokk",
-      "aliases": [
-        "Brokk"
+      "author_patterns": [],
+      "text_patterns": [
+        "Brokk AI"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Charlie",
-      "aliases": [
-        "Charlie"
+      "author_patterns": [],
+      "text_patterns": [
+        "CharlieHelps <charlie@charlielabs\\.ai>"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Claude Code",
-      "aliases": [
-        "Claude Code"
+      "author_patterns": [
+        "Claude (?:Opus|Sonnet|Haiku|Fable)[^<]*<noreply@anthropic\\.com>",
+        "Claude\\s*<noreply@anthropic\\.com>",
+        "Claude[^<]*<claude@anthropic\\.com>"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [
-          "assistant@anthropic.com",
-          "claude@anthropic.com",
-          "noreply@anthropic.com"
-        ],
-        "names": [
-          "claude (glm-4.6)",
-          "claude (glm-4.7)",
-          "claude (kimi-for-coding)",
-          "claude (kimi-k2.5)",
-          "claude (minimax-m2.1)",
-          "claude haiku 4.5",
-          "claude opus 4.5",
-          "claude opus 4.6",
-          "claude sonnet 4.5"
-        ]
-      },
-      "branches": [
-        "claudecode/",
-        "claude/"
+      "text_patterns": [
+        "Claude Code",
+        "Claude (?:Opus|Sonnet|Haiku|Fable)[^<]*<noreply@anthropic\\.com>",
+        "Claude\\s*<noreply@anthropic\\.com>"
       ],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [
+        "(?:^|/)claude/"
+      ],
+      "label_patterns": []
     },
     {
       "name": "Cline",
-      "aliases": [
+      "author_patterns": [],
+      "text_patterns": [
         "Cline"
       ],
-      "identity": {
-        "logins": [
-          "cline"
-        ],
-        "emails": [
-          "cline@example.com"
-        ],
-        "names": [
-          "cline"
-        ]
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "CodeBuddy",
-      "aliases": [
+      "author_patterns": [],
+      "text_patterns": [
         "CodeBuddy",
-        "Code Buddy"
+        "CodeBuddy Code",
+        "CodeBuddy(?: Code)? <(?:noreply@tencent\\.com|noreply@codebuddy\\.ai|noreply@cnb\\.cool|noreply@codebuddy\\.dev)>"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [
-        "https://www.codebuddy.ai/"
-      ],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Codegen",
-      "aliases": [
-        "Codegen"
+      "author_patterns": [
+        "codegen-sh\\[bot\\]"
       ],
-      "identity": {
-        "logins": [
-          "codegen-sh"
-        ],
-        "emails": [],
-        "names": [
-          "codegen-sh"
-        ]
-      },
-      "branches": [
-        "codegen-bot/"
+      "text_patterns": [
+        "codegen-sh\\[bot\\] <131295404\\+codegen-sh\\[bot\\]@users\\.noreply\\.github\\.com>"
       ],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
-    },
-    {
-      "name": "Coderabbit",
-      "aliases": [
-        "Coderabbit"
-      ],
-      "identity": {
-        "logins": [
-          "coderabbit"
-        ],
-        "emails": [],
-        "names": [
-          "coderabbit"
-        ]
-      },
-      "branches": [
-        "coderabbit/"
-      ],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Codex",
-      "aliases": [
-        "Codex"
+      "author_patterns": [
+        "codex@openai\\.com"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [
-          "codex@openai.com"
-        ],
-        "names": [
-          "codex (gpt-5.2-codex)"
-        ]
-      },
-      "branches": [
-        "codex/"
+      "text_patterns": [
+        "Codex",
+        "OpenAI Codex",
+        "(?:OpenAI )?Codex <(?:codex|noreply)@openai\\.com>"
       ],
-      "labels": [
-        "codex"
+      "branch_patterns": [
+        "(?:^|/)codex/"
       ],
-      "source_refs": [],
-      "task_links": [
-        {
-          "host": "chatgpt.com",
-          "path_prefix": "/codex/tasks/"
-        }
+      "label_patterns": [
+        "^codex$"
       ]
     },
     {
       "name": "Continue",
-      "aliases": [
-        "Continue"
+      "author_patterns": [
+        "Continue <noreply@continue\\.dev>"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "text_patterns": [
+        "Continue",
+        "Continue <noreply@continue\\.dev>"
+      ],
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Copilot",
-      "aliases": [
-        "GitHub Copilot Coding Agent",
-        "Copilot Coding Agent",
-        "Copilot cloud agent"
+      "author_patterns": [
+        "copilot-swe-agent(?:\\[bot\\])?",
+        "Copilot <[0-9]+\\+Copilot@users\\.noreply\\.github\\.com>",
+        "(?:GitHub )?Copilot <copilot@github\\.com>"
       ],
-      "identity": {
-        "logins": [
-          "copilot-swe-agent"
-        ],
-        "emails": [],
-        "names": [
-          "copilot-swe-agent"
-        ]
-      },
-      "branches": [
-        "copilot/"
+      "text_patterns": [
+        "Copilot",
+        "Copilot <[0-9]+\\+Copilot@users\\.noreply\\.github\\.com>",
+        "(?:GitHub )?Copilot <copilot@github\\.com>"
       ],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [
+        "(?:^|/)copilot/"
+      ],
+      "label_patterns": []
     },
     {
       "name": "Crush",
-      "aliases": [
-        "Crush"
+      "author_patterns": [],
+      "text_patterns": [
+        "Crush",
+        "Crush <crush@charm\\.land>"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [
-          "crush@charm.land"
-        ],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Cursor",
-      "aliases": [
-        "Cursor Agent",
-        "Cursor Cloud Agent"
+      "author_patterns": [
+        "cursoragent@cursor\\.com"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [
-          "cursoragent@cursor.com"
-        ],
-        "names": []
-      },
-      "branches": [
-        "cursor/"
+      "text_patterns": [
+        "Cursor(?!\\s+Bugbot\\b)",
+        "Cursor(?: Agent)? <cursoragent@cursor\\.com>"
       ],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
-    },
-    {
-      "name": "Deepsource",
-      "aliases": [
-        "Deepsource"
+      "branch_patterns": [
+        "(?:^|/)cursor/"
       ],
-      "identity": {
-        "logins": [
-          "deepsource-autofix"
-        ],
-        "emails": [],
-        "names": [
-          "deepsource-autofix"
-        ]
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "label_patterns": []
     },
     {
       "name": "Devin",
-      "aliases": [
-        "Devin"
+      "author_patterns": [
+        "devin-ai-integration\\[bot\\]"
       ],
-      "identity": {
-        "logins": [
-          "devin-ai-integration"
-        ],
-        "emails": [],
-        "names": [
-          "devin-ai-integration"
-        ]
-      },
-      "branches": [
-        "devin/"
+      "text_patterns": [
+        "Devin(?:[.:]|\\s*\\([^)]*\\))?$",
+        "Devin AI <158243242\\+devin-ai-integration\\[bot\\]@users\\.noreply\\.github\\.com>",
+        "devin-ai-integration\\[bot\\]"
       ],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [
+        "(?:^|/)devin/"
+      ],
+      "label_patterns": []
     },
     {
-      "name": "Factory",
-      "aliases": [
-        "Factory"
-      ],
-      "identity": {
-        "logins": [],
-        "emails": [],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "name": "DeepSeek Harness",
+      "author_patterns": [],
+      "text_patterns": [],
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Factory Droid",
-      "aliases": [
-        "Factory Droid"
+      "author_patterns": [
+        "factory-droid\\[bot\\]"
       ],
-      "identity": {
-        "logins": [
-          "factory-droid"
-        ],
-        "emails": [],
-        "names": [
-          "factory-droid[bot]"
-        ]
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
-    },
-    {
-      "name": "Fly",
-      "aliases": [
-        "Fly"
+      "text_patterns": [
+        "factory-droid\\[bot\\] <138933559\\+factory-droid\\[bot\\]@users\\.noreply\\.github\\.com>"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [
-          "dev@fly.io"
-        ],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Gemini",
-      "aliases": [
+      "author_patterns": [],
+      "text_patterns": [
         "Gemini CLI",
-        "Gemini Code Assist agent mode",
-        "Gemini Code Assist Agent"
+        "Gemini Code Assist",
+        "gemini-code-assist",
+        "gemini-code-assist\\[bot\\] <176961590\\+gemini-code-assist\\[bot\\]@users\\.noreply\\.github\\.com>"
       ],
-      "identity": {
-        "logins": [
-          "gemini-cli",
-          "gemini-code-assist"
-        ],
-        "emails": [],
-        "names": [
-          "gemini 2.5 flash",
-          "gemini 2.5 pro",
-          "gemini-cli",
-          "gemini-code-assist"
-        ]
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Goose",
-      "aliases": [
+      "author_patterns": [],
+      "text_patterns": [
         "Goose"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [],
-        "names": []
-      },
-      "branches": [
-        "goose/"
-      ],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
-      "name": "GPT-Engineer",
-      "aliases": [
-        "GPT-Engineer"
+      "name": "Lovable",
+      "author_patterns": [
+        "lovable-dev\\[bot\\]",
+        "gpt-engineer-app\\[bot\\]"
       ],
-      "identity": {
-        "logins": [
-          "gpt-engineer"
-        ],
-        "emails": [],
-        "names": [
-          "gpt-engineer"
-        ]
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "text_patterns": [
+        "gpt-engineer-app\\[bot\\] <159125892\\+gpt-engineer-app\\[bot\\]@users\\.noreply\\.github\\.com>"
+      ],
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Gru",
-      "aliases": [
-        "Gru"
+      "author_patterns": [
+        "gru-agent\\[bot\\]"
       ],
-      "identity": {
-        "logins": [
-          "gru-agent"
-        ],
-        "emails": [],
-        "names": [
-          "gru-agent"
-        ]
-      },
-      "branches": [
-        "gru/"
+      "text_patterns": [
+        "gru-agent\\[bot\\] <185149714\\+gru-agent\\[bot\\]@users\\.noreply\\.github\\.com>"
       ],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Jules",
-      "aliases": [
-        "Jules"
+      "author_patterns": [
+        "google-labs-jules\\[bot\\]"
       ],
-      "identity": {
-        "logins": [
-          "google-labs-jules"
-        ],
-        "emails": [
-          "jules@users.noreply.github.com"
-        ],
-        "names": [
-          "google-labs-jules"
-        ]
-      },
-      "branches": [
-        "jules/"
+      "text_patterns": [
+        "Google Jules",
+        "Jules \\(Google\\)",
+        "google-labs-jules\\[bot\\] <161369871\\+google-labs-jules\\[bot\\]@users\\.noreply\\.github\\.com>"
       ],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Junie",
-      "aliases": [
-        "Junie"
+      "author_patterns": [
+        "jetbrains-junie\\[bot\\]"
       ],
-      "identity": {
-        "logins": [
-          "jetbrains-junie",
-          "junie"
-        ],
-        "emails": [],
-        "names": [
-          "jetbrains-junie",
-          "junie"
-        ]
-      },
-      "branches": [
-        "jetbrains_junie"
+      "text_patterns": [
+        "Junie",
+        "Junie <junie@jetbrains\\.com>"
       ],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Kilo Code",
-      "aliases": [
-        "Kilo Code"
+      "author_patterns": [
+        "kilo-code-bot\\[bot\\]",
+        "kiloconnect\\[bot\\]"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [],
-        "names": [
-          "kilo code"
-        ]
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "text_patterns": [
+        "Kilo Code",
+        "kiloconnect\\[bot\\] <240665456\\+kiloconnect\\[bot\\]@users\\.noreply\\.github\\.com>"
+      ],
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Kimi Code",
-      "aliases": [
+      "author_patterns": [],
+      "text_patterns": [
         "Kimi Code",
-        "Kimi CLI",
-        "Kimi Code CLI"
+        "Kimi(?: Code)? <noreply@moonshot\\.(?:cn|ai)>"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [
-        "https://github.com/MoonshotAI/kimi-cli/blob/4a550effdfcb29a25a5d325bf935296cc50cd417/README.md"
-      ],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Kiro",
-      "aliases": [
-        "Kiro"
+      "author_patterns": [],
+      "text_patterns": [
+        "Kiro",
+        "Kiro <kiro-noreply@amazon\\.com>",
+        "Kiro Agent <244629292\\+kiro-agent@users\\.noreply\\.github\\.com>"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [
-          "kiro-agent@amazon.com",
-          "kiro-noreply@amazon.com",
-          "kiro@aws.amazon.com"
-        ],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [
+        "(?:^|/)kiro/"
+      ],
+      "label_patterns": []
     },
     {
-      "name": "Langchain Open SWE",
-      "aliases": [
-        "Langchain Open SWE"
+      "name": "LangChain Open SWE",
+      "author_patterns": [
+        "open-swe\\[bot\\]",
+        "open-swe-dev\\[bot\\]"
       ],
-      "identity": {
-        "logins": [
-          "open-swe"
-        ],
-        "emails": [],
-        "names": [
-          "open-swe"
-        ]
-      },
-      "branches": [
-        "open-swe/"
+      "text_patterns": [
+        "Open SWE",
+        "open-swe\\[bot\\]",
+        "open-swe-dev\\[bot\\]"
       ],
-      "labels": [
-        "open-swe"
+      "branch_patterns": [
+        "(?:^|/)open-swe/"
       ],
-      "source_refs": [],
-      "task_links": []
+      "label_patterns": []
     },
     {
       "name": "Letta Code",
-      "aliases": [
-        "Letta Code"
+      "author_patterns": [],
+      "text_patterns": [
+        "Letta Code",
+        "Letta(?: Code)? <noreply@letta\\.com>"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [
-          "noreply@letta.com"
-        ],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Microsoft Amplifier",
-      "aliases": [
-        "Microsoft Amplifier"
+      "author_patterns": [],
+      "text_patterns": [
+        "Amplifier <240397093\\+microsoft-amplifier@users\\.noreply\\.github\\.com>"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [
-          "microsoft-amplifier@users.noreply.github.com"
-        ],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "MiMo Code",
-      "aliases": [
-        "MiMo Code"
-      ],
-      "identity": {
-        "logins": [],
-        "emails": [],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [
-        "https://github.com/XiaomiMiMo/MiMo-Code/blob/ce124cbdfcd75f1115070263fdfb4bc5ee498316/README.md"
-      ],
-      "task_links": []
+      "author_patterns": [],
+      "text_patterns": [],
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "MiniMax Code",
-      "aliases": [
-        "MiniMax Code"
-      ],
-      "identity": {
-        "logins": [],
-        "emails": [],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [
-        "https://github.com/MiniMax-AI/minimax-code/blob/cd025375799a1360d499d5c06cfb2e1111a960fc/README.md"
-      ],
-      "task_links": []
+      "author_patterns": [],
+      "text_patterns": [],
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Mistral Vibe",
-      "aliases": [
-        "Mistral Vibe"
+      "author_patterns": [
+        "vibe@mistral\\.ai"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [
-          "vibe@mistral.ai"
-        ],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "text_patterns": [
+        "Mistral Vibe",
+        "Mistral Vibe <vibe@mistral\\.ai>"
+      ],
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Ona",
-      "aliases": [
-        "Ona"
+      "author_patterns": [],
+      "text_patterns": [
+        "Ona <no-reply@ona\\.com>"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [
-          "no-reply@ona.com"
-        ],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
-      "name": "Opencode",
-      "aliases": [
+      "name": "OpenCode",
+      "author_patterns": [],
+      "text_patterns": [
         "OpenCode",
-        "Open Code"
+        "OpenCode <noreply@opencode\\.ai>"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [
-          "noreply@opencode.ai"
-        ],
-        "names": []
-      },
-      "branches": [
-        "opencode/"
+      "branch_patterns": [
+        "(?:^|/)opencode/"
       ],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "label_patterns": []
     },
     {
       "name": "OpenHands",
-      "aliases": [
-        "OpenHands"
+      "author_patterns": [
+        "openhands@all-hands\\.dev"
       ],
-      "identity": {
-        "logins": [
-          "openhands-agent"
-        ],
-        "emails": [
-          "openhands@all-hands.dev"
-        ],
-        "names": [
-          "openhands-agent"
-        ]
-      },
-      "branches": [
-        "openhands/"
+      "text_patterns": [
+        "OpenHands <openhands@all-hands\\.dev>"
       ],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Pi",
-      "aliases": [
-        "Pi"
+      "author_patterns": [],
+      "text_patterns": [
+        "Pi",
+        "Pi Coding Agent"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Plandex",
-      "aliases": [
-        "Plandex"
-      ],
-      "identity": {
-        "logins": [],
-        "emails": [],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
-    },
-    {
-      "name": "Qodo",
-      "aliases": [
-        "Qodo"
-      ],
-      "identity": {
-        "logins": [],
-        "emails": [],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "author_patterns": [],
+      "text_patterns": [],
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Qwen Code",
-      "aliases": [
-        "Qwen Code"
+      "author_patterns": [],
+      "text_patterns": [
+        "Qwen Code",
+        "Qwen-Coder <qwen-coder@alibabacloud\\.com>",
+        "Qwen Code <qwen@tongyi\\.aliyun\\.com>"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [
-        "https://github.com/QwenLM/qwen-code/blob/48142a8bc909ebcf0f3d32dbd51be52a35a3186b/README.md"
-      ],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
-      "name": "Qwen Coder",
-      "aliases": [],
-      "identity": {
-        "logins": [
-          "qwen-coder"
-        ],
-        "emails": [
-          "qwen-coder@alibabacloud.com"
-        ],
-        "names": [
-          "qwen-coder"
-        ]
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "name": "Qoder",
+      "author_patterns": [],
+      "text_patterns": [
+        "Qoder",
+        "Qoder <noreply@qoder\\.com>"
+      ],
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Roo Code",
-      "aliases": [
-        "Roo Code"
+      "author_patterns": [
+        "roomote@roocode\\.com"
       ],
-      "identity": {
-        "logins": [
-          "roomote",
-          "roomote-agent"
-        ],
-        "emails": [
-          "roomote@roocode.com"
-        ],
-        "names": [
-          "roo code",
-          "roomote",
-          "roomote-agent"
-        ]
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "text_patterns": [
+        "Roo Code <roomote@roocode\\.com>"
+      ],
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
-      "name": "Sentry",
-      "aliases": [
-        "Sentry"
+      "name": "Roomote",
+      "author_patterns": [
+        "roomote-roomote"
       ],
-      "identity": {
-        "logins": [
-          "seer-by-sentry"
-        ],
-        "emails": [],
-        "names": [
-          "seer-by-sentry"
-        ]
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "text_patterns": [],
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
-      "name": "Serena",
-      "aliases": [
-        "Serena"
+      "name": "Sentry Seer",
+      "author_patterns": [
+        "seer-by-sentry\\[bot\\]"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [],
-        "names": []
-      },
-      "branches": [
-        "serena/"
+      "text_patterns": [],
+      "branch_patterns": [
+        "(?:^|/)seer/fix/"
       ],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "label_patterns": []
     },
     {
       "name": "Sketch",
-      "aliases": [
-        "Sketch"
+      "author_patterns": [
+        "hello@sketch\\.dev"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [
-          "hello@sketch.dev"
-        ],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
-    },
-    {
-      "name": "Sourcery",
-      "aliases": [
-        "Sourcery"
+      "text_patterns": [
+        "Sketch <hello@sketch\\.dev>"
       ],
-      "identity": {
-        "logins": [
-          "sourcery-ai"
-        ],
-        "emails": [],
-        "names": [
-          "sourcery-ai"
-        ]
-      },
-      "branches": [
-        "sourcery-ai/"
-      ],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Sweep",
-      "aliases": [
-        "Sweep"
+      "author_patterns": [
+        "sweep-ai\\[bot\\]"
       ],
-      "identity": {
-        "logins": [
-          "sweep-ai"
-        ],
-        "emails": [],
-        "names": [
-          "sweep-ai"
-        ]
-      },
-      "branches": [
-        "sweep/"
+      "text_patterns": [
+        "sweep-ai\\[bot\\] <128439645\\+sweep-ai\\[bot\\]@users\\.noreply\\.github\\.com>"
       ],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
-    },
-    {
-      "name": "Tessl",
-      "aliases": [
-        "Tessl"
-      ],
-      "identity": {
-        "logins": [],
-        "emails": [],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Trae",
-      "aliases": [
-        "Trae"
+      "author_patterns": [],
+      "text_patterns": [
+        "Trae",
+        "traeagent <traeagent@users\\.noreply\\.github\\.com>"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [
+        "(?:^|/)trae/agent-"
+      ],
+      "label_patterns": []
     },
     {
       "name": "Verdent",
-      "aliases": [
-        "Verdent"
-      ],
-      "identity": {
-        "logins": [],
-        "emails": [],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "author_patterns": [],
+      "text_patterns": [],
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Warp",
-      "aliases": [
-        "Warp"
+      "author_patterns": [
+        "Warp Agent <agent@warp\\.dev>",
+        "Oz <oz-agent@warp\\.dev>"
       ],
-      "identity": {
-        "logins": [],
-        "emails": [
-          "noreply@warp.dev"
-        ],
-        "names": []
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "text_patterns": [
+        "Warp <agent@warp\\.dev>",
+        "Oz <oz-agent@warp\\.dev>"
+      ],
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
       "name": "Windsurf",
-      "aliases": [
-        "Windsurf"
+      "author_patterns": [],
+      "text_patterns": [
+        "Windsurf",
+        "windsurf-bot\\[bot\\] <189301087\\+windsurf-bot\\[bot\\]@users\\.noreply\\.github\\.com>"
       ],
-      "identity": {
-        "logins": [
-          "windsurf-bot"
-        ],
-        "emails": [
-          "cascade@windsurf.ai"
-        ],
-        "names": [
-          "windsurf-bot"
-        ]
-      },
-      "branches": [
-        "windsurf-bot/"
-      ],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "branch_patterns": [],
+      "label_patterns": []
     },
     {
-      "name": "ChatGPT",
-      "aliases": [],
-      "identity": {
-        "logins": [
-          "ChatGPT"
-        ],
-        "emails": [
-          "chatgpt@chatgpt.com",
-          "chatgpt@no-reply.com",
-          "chatgpt@openai.com"
-        ],
-        "names": [
-          "ChatGPT"
-        ]
-      },
-      "branches": [],
-      "labels": [],
-      "source_refs": [],
-      "task_links": []
+      "name": "ZCode",
+      "author_patterns": [],
+      "text_patterns": [
+        "ZCode"
+      ],
+      "branch_patterns": [],
+      "label_patterns": []
+    },
+    {
+      "name": "Huawei CodeArts",
+      "author_patterns": [],
+      "text_patterns": [],
+      "branch_patterns": [],
+      "label_patterns": []
+    },
+    {
+      "name": "Replit Agent",
+      "author_patterns": [
+        "replit-agent"
+      ],
+      "text_patterns": [],
+      "branch_patterns": [],
+      "label_patterns": []
+    },
+    {
+      "name": "iFlow CLI",
+      "author_patterns": [],
+      "text_patterns": [],
+      "branch_patterns": [],
+      "label_patterns": []
     }
   ]
 }

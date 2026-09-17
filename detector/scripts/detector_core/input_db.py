@@ -136,7 +136,7 @@ def detect_one(c, target, scanner):
         d, "pr", t["pr_id"], "author_login", "author_email", "author_name", pr_actor_id
     )
 
-    # Inspect explicit PR-body traces and task links.
+    # Inspect explicit PR-body text traces.
     scanner.text(d["body_markdown"], "pr", t["pr_id"], "body_markdown", pr_actor_id)
     scanner.metadata(d["head_ref_name"], "branches", t["pr_id"], "head_ref_name")
 
@@ -146,11 +146,8 @@ def detect_one(c, target, scanner):
     for label in labels:
         scanner.metadata(label["name"], "labels", label.get("label_node_id", label["ordinal"]), "name")
 
-    count, missing_email = 0, 0
     for row in c.execute("SELECT * FROM pr_commits WHERE pr_id=? ORDER BY ordinal", (t["pr_id"],)):
         commit = dict(row)
-        count += 1
-        missing_email += not bool(commit["author_email"])
         scanner.identity(
             commit,
             "commit",
@@ -161,8 +158,7 @@ def detect_one(c, target, scanner):
             commit["author_user_database_id"],
             commit["committed_date"],
         )
-        # Co-Authored-By and Generated/Implemented/... attribution phrases are
-        # both read from the commit message.
+        # Commit-message text uses the same global text matcher as PR-body text.
         scanner.text(
             commit["message"],
             "commit",
@@ -173,16 +169,5 @@ def detect_one(c, target, scanner):
         )
 
     result.update(scanner.summary())
-    result.update(
-        unavailable_reason="",
-        commit_observed_count=count,
-        commit_total_count=t["commit_total_count"],
-        commit_observation_status=t["commit_observation_status"],
-        label_observed_count=len(labels),
-        missing_commit_author_email_count=missing_email,
-        author_identity_missing=d["author_database_id"] is None,
-        empty_pr_body=not bool((d["body_markdown"] or "").strip()),
-        created_at=d["created_at"],
-        collected_at_utc=d["collected_at_utc"],
-    )
+    result["unavailable_reason"] = ""
     return result

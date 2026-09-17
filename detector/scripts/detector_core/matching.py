@@ -1,40 +1,33 @@
 from __future__ import annotations
 
 import re
-from urllib.parse import urlsplit
 
 
-COAUTHOR = re.compile(r"^\s*Co-Authored-By\s*:\s*([^<>\r\n]+?)(?:\s*<([^<>\r\n]+)>)?\s*$", re.I)
+# One global, deterministic attribution grammar shared by every Agent.
+# It intentionally does not interpret negation, checklist state, code-block state,
+# or Agent-specific semantic context.
 ATTRIBUTION_PHRASE = re.compile(
-    r"(?:generated|implemented|written|created|built)\s+(?:with|by|using)\s*:?\s*$",
+    r"(?:"
+    r"(?:generated|implemented|written|created|built|developed|coded|authored|made|produced|assisted)"
+    r"\s+(?:with|by|using|via|with\s+(?:the\s+)?(?:help|assistance)\s+(?:of|from))\s*:?[ \t]*"
+    r"|co-authored-by\s*:\s*"
+    r")$",
     re.I,
 )
-URL = re.compile(r"https?://[^\s<>\"`]+", re.I)
-MARKDOWN_LINK = re.compile(r"\[([^\]\r\n]+)\]\([^\)\r\n]+\)")
-INLINE_MARKDOWN_WRAPPERS = (
-    re.compile(r"\*\*([^*\r\n]+)\*\*"),
-    re.compile(r"__([^_\r\n]+)__"),
-    re.compile(r"~~([^~\r\n]+)~~"),
-    re.compile(r"`([^`\r\n]+)`"),
-    re.compile(r"(?<!\*)\*([^*\r\n]+)\*(?!\*)"),
-    re.compile(r"(?<!_)_([^_\r\n]+)_(?!_)"),
-)
+
+# Minimal Markdown normalization.  Preserve the URL; only rewrite the common
+# [visible text](URL) representation into visible text (URL).  The raw source
+# text is still preserved in emitted evidence.
+MARKDOWN_LINK = re.compile(r"\[([^\]\r\n]+)\]\(([^\)\r\n]+)\)")
 
 
-def attribution_line(line):
-    """Normalize only simple inline Markdown for R3 phrase matching.
-
-    Ordinary punctuation, prefixes, underscores, tildes, URLs, email
-    addresses, and the stored source text are left untouched.
-    """
-    line = MARKDOWN_LINK.sub(r"\1", line)
-    for wrapper in INLINE_MARKDOWN_WRAPPERS:
-        line = wrapper.sub(r"\1", line)
-    return line
+def normalize_text(line: str) -> str:
+    """Apply only representation-level normalization used before text matching."""
+    return MARKDOWN_LINK.sub(r"\1 (\2)", line)
 
 
 class EvidenceScanner:
-    """Scan explicit coding-agent traces using registered heuristic rules."""
+    """Scan explicit coding-agent traces using the four maintained channels."""
 
     def __init__(self, registry, emit):
         self.registry = registry
@@ -49,7 +42,6 @@ class EvidenceScanner:
         self.metadata_tools = set()
         self.categories = set()
         self.evidence_count = 0
-        self.automation_actors = {}
 
     def _relation(self, actor_id):
         target_author = self.pr.get("target_author_id")
@@ -77,7 +69,6 @@ class EvidenceScanner:
         self.emit_row({
             "pr_id": self.pr["pr_id"],
             "rule": rule,
-            "category": category,
             "tool": tool,
             "source_kind": source,
             "source_object_id": str(object_id),
@@ -88,105 +79,56 @@ class EvidenceScanner:
             "actor_id": actor_id,
             "actor_relation": relation,
             "event_time": event_time,
-            "collected_at": self.pr.get("collected_at_utc"),
         })
 
     def identity(self, row, source, object_id, login_field, email_field, name_field,
                  actor_id=None, event_time=None):
-        found_agent = False
-        for field, key in ((login_field, "login"), (email_field, "email"), (name_field, "name")):
-            value = row.get(field) or ""
-            tools = self.registry.identity(**{key: value})
-            if tools:
-                found_agent = True
-            for tool in tools:
-                self.evidence(
-                    tool, "R1", "authors", source, object_id, field, 0, value,
-                    actor_id=actor_id, event_time=event_time, detail="known_agent_identity",
-                )
-        # Agent identities have priority. Only identities not recognized as an
-        # agent are classified as ordinary/unknown automation accounts.
-        if not found_agent:
-            classification = self.registry.automation_classification(
-                login=row.get(login_field) or "",
-                email=row.get(email_field) or "",
-                name=row.get(name_field) or "",
+        """Apply the same author-pattern list to PR authors and commit authors."""
+        login = row.get(login_field) or ""
+        email = row.get(email_field) or ""
+        name = row.get(name_field) or ""
+        rendered = self.registry.render_identity(login=login, name=name, email=email)
+        hits = self.registry.author_matches(rendered)
+        for tool, raw_pattern, _start, _end in hits:
+            self.evidence(
+                tool, "author_identity", "authors", source, object_id, "author_identity", 0, rendered,
+                actor_id=actor_id, event_time=event_time,
+                detail=f"author_pattern:{raw_pattern}",
             )
-            if classification:
-                self.automation_actors[(source, str(object_id))] = classification
 
     @staticmethod
     def attribution_phrase(text, start):
-        """Return True when a registered Agent name follows a basic attribution phrase."""
+        """Return True when an Agent pattern immediately follows the global grammar."""
         return bool(ATTRIBUTION_PHRASE.search(text[:start]))
-
-    def _valid_task_link(self, url, spec):
-        try:
-            parsed = urlsplit(url)
-            if parsed.scheme != "https" or parsed.username or parsed.password or parsed.port not in (None, 443):
-                return False
-            if parsed.hostname != spec["host"] or not parsed.path.startswith(spec["path_prefix"]):
-                return False
-            task = parsed.path[len(spec["path_prefix"]):].rstrip("/")
-            return bool(re.fullmatch(r"[A-Za-z0-9_-]+", task))
-        except ValueError:
-            return False
 
     def text(self, value, source, object_id, field, actor_id=None, event_time=None):
         if not value:
             return
         for line_number, raw_line in enumerate(value.splitlines(), 1):
-            raw_text = raw_line.strip()
-
-            # R2 parses the original line so identities are never altered by
-            # Markdown normalization (for example, underscores in emails).
-            coauthor = COAUTHOR.fullmatch(raw_text)
-            if coauthor:
-                name = coauthor.group(1).strip()
-                email = (coauthor.group(2) or "").strip()
-                for tool in self.registry.identity(name=name, email=email, attribution=True):
-                    self.evidence(
-                        tool, "R2", "authors", source, object_id, field, line_number, raw_line,
-                        actor_id=actor_id, event_time=event_time, detail="coauthor_trailer",
-                    )
-                continue
-
-            # R4 always scans the original line. This preserves task IDs and
-            # also detects URLs used as Markdown link targets.
-            for url_match in URL.finditer(raw_line):
-                url = url_match.group().rstrip(").,;]}")
-                for spec in self.registry.task_links:
-                    if self._valid_task_link(url, spec):
-                        self.evidence(
-                            spec["tool"], "R4", "text", source, object_id, field, line_number, raw_line,
-                            actor_id=actor_id, event_time=event_time, detail=url,
-                        )
-
-            # R3 performs basic phrase matching only. Inline Markdown wrappers
-            # are normalized in a temporary copy so presentation does not hide
-            # an otherwise explicit attribution phrase. No surrounding semantic
-            # context is interpreted, and the original evidence text is kept.
-            line = attribution_line(raw_line)
-            for tool, start, end in self.registry.names_in(line):
+            line = normalize_text(raw_line)
+            for tool, raw_pattern, start, _end in self.registry.text_matches(line):
                 if self.attribution_phrase(line, start):
+                    # Emit every matching configured pattern.  This is deliberate:
+                    # the next audit needs exact per-pattern counts and overlaps.
                     self.evidence(
-                        tool, "R3", "text", source, object_id, field, line_number, raw_line,
-                        actor_id=actor_id, event_time=event_time, detail="attribution_phrase",
+                        tool, "text_attribution", "text", source, object_id, field, line_number, raw_line,
+                        actor_id=actor_id, event_time=event_time,
+                        detail=f"text_pattern:{raw_pattern}",
                     )
 
     def metadata(self, value, kind, object_id, field, actor_id=None, event_time=None):
-        seen = set()
+        rule = "branch" if kind == "branches" else "label"
+        detail_prefix = "branch_pattern" if kind == "branches" else "label_pattern"
         for pattern, tool, raw_pattern in self.registry.metadata_patterns[kind]:
-            if tool not in seen and pattern.search(value or ""):
-                seen.add(tool)
+            if pattern.search(value or ""):
+                # Emit every matching configured pattern for exact redundancy auditing.
                 self.evidence(
-                    tool, "R5", kind, kind, object_id, field, 0, value or "",
-                    actor_id=actor_id, event_time=event_time, detail=raw_pattern,
+                    tool, rule, kind, kind, object_id, field, 0, value or "",
+                    actor_id=actor_id, event_time=event_time,
+                    detail=f"{detail_prefix}:{raw_pattern}",
                 )
 
     def summary(self):
-        known_automation = sum(v == "known_non_agent_automation" for v in self.automation_actors.values())
-        unknown_bot = sum(v == "unknown_bot" for v in self.automation_actors.values())
         return {
             "status": "agent_trace_detected" if self.tools else "no_trace_detected",
             "tools": sorted(self.tools),
@@ -199,7 +141,5 @@ class EvidenceScanner:
             "unknown_actor_tools": sorted(self.unknown_actor_tools),
             "metadata_agent_trace": bool(self.metadata_tools),
             "metadata_tools": sorted(self.metadata_tools),
-            "known_non_agent_automation_actor_count": known_automation,
-            "unknown_bot_actor_count": unknown_bot,
             "evidence_count": self.evidence_count,
         }
