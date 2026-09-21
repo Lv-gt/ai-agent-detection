@@ -4,10 +4,6 @@
 
 ## 必需表
 
-### `metadata`
-
-必需字段：`key`、`value`。当前检测器只要求表结构存在。
-
 ### `target_prs`
 
 必需字段：
@@ -17,10 +13,6 @@
 - `pr_number`
 - `expected_author_id`
 - `collection_status`
-- `commit_total_count`
-- `commit_observed_count`
-- `commit_observation_status`
-- `label_observed_count`
 
 `expected_author_id` 在输出中称为 `target_author_id`，用于判断 commit 痕迹是否属于目标 PR 作者。
 
@@ -39,26 +31,26 @@
 - `author_email`
 - `body_markdown`
 - `head_ref_name`
-- `created_at`
-- `collected_at_utc`
 
 ### `pr_commits`
 
 必需字段：
 
 - `pr_id`
-- `ordinal`
 - `sha`
 - `message`
 - `author_name`
 - `author_email`
 - `author_user_login`
 - `author_user_database_id`
-- `committed_date`
+
+可选字段：`committed_date`。存在时写入逐条证据的事件时间；缺失不影响检测。
 
 ### `pr_labels`
 
-必需字段：`pr_id`、`ordinal`、`name`。
+必需字段：`pr_id`、`name`。
+
+可选字段：`label_node_id`或`ordinal`。存在时用作逐条证据对象编号；均缺失时使用label名称，不影响检测。
 
 历史 label event 不是检测输入要求；即使数据库中存在相应表，它也不参与检测判断。
 

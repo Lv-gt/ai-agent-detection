@@ -1,621 +1,677 @@
 {
-  "schema_version": "2.0",
-  "tools": [
+  "counts": {
+    "agents": 56,
+    "identity": 150,
+    "branch": 13,
+    "label": 2,
+    "raw_message_signature": 2,
+    "agent_specific": 165,
+    "complete_executable_inventory": 167
+  },
+  "attribution_grammar": {
+    "verb_patterns": [
+      "generated",
+      "implemented",
+      "authored",
+      "developed",
+      "written",
+      "created",
+      "assisted",
+      "built",
+      "made",
+      "coded",
+      "produced",
+      "co(?:[ \\t]+|-)?authored",
+      "co(?:[ \\t]+|-)?developed"
+    ],
+    "connectors": [
+      "by",
+      "with",
+      "using",
+      "via"
+    ],
+    "hyphenated_prefixes": [
+      "generated-by",
+      "co-authored-by",
+      "co-developed-by"
+    ],
+    "bridge_patterns": [
+      "assistance[ \\t]+from",
+      "the[ \\t]+assistance[ \\t]+of",
+      "help[ \\t]+from",
+      "the[ \\t]+help[ \\t]+of"
+    ]
+  },
+  "agents": [
     {
       "name": "Abacus",
-      "author_patterns": [],
-      "text_patterns": [
+      "identity_patterns": [
         "Abacus\\.AI CLI <agent@abacus\\.ai>"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Aider",
-      "author_patterns": [
-        "\\(aider\\)"
-      ],
-      "text_patterns": [
-        "Aider .*<aider@aider\\.chat>"
+      "identity_patterns": [
+        "\\(aider\\)",
+        "Aider .*<aider@aider\\.chat>",
+        "Aider"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Alibaba Lingma",
-      "author_patterns": [],
-      "text_patterns": [
-        "Lingma"
+      "identity_patterns": [
+        "Lingma",
+        "lingma-agents\\[bot\\]"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Amazon Q",
-      "author_patterns": [
-        "amazon-q-developer\\[bot\\]"
-      ],
-      "text_patterns": [
+      "identity_patterns": [
+        "amazon-q-developer\\[bot\\]",
         "Amazon Q Developer",
         "amazon-q-developer\\[bot\\] <208079219\\+amazon-q-developer\\[bot\\]@users\\.noreply\\.github\\.com>"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Amp",
-      "author_patterns": [
+      "identity_patterns": [
         "ampagent",
-        "amp@ampcode\\.com"
-      ],
-      "text_patterns": [
         "Amp",
         "Amp <amp@ampcode\\.com>"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Atlassian Rovo Dev",
-      "author_patterns": [],
-      "text_patterns": [
+      "identity_patterns": [
         "Rovo Dev",
         "Rovodev"
       ],
       "branch_patterns": [
         "(?:^|/)rovodev/"
       ],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Augment Code",
-      "author_patterns": [],
-      "text_patterns": [
+      "identity_patterns": [
         "Augment Code",
         "Augment Agent",
-        "Augment (?:Code|Agent) <[^>]+@augmentcode\\.com>"
+        "Augment Agent <augment@augmentcode\\.com>",
+        "Augment Agent <agent@augmentcode\\.com>",
+        "Augment Code <code@augmentcode\\.com>",
+        "Augment Code <noreply@augmentcode\\.com>"
       ],
       "branch_patterns": [],
-      "label_patterns": []
-    },
-    {
-      "name": "Baidu Comate",
-      "author_patterns": [],
-      "text_patterns": [],
-      "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Brokk",
-      "author_patterns": [],
-      "text_patterns": [
-        "Brokk AI"
+      "identity_patterns": [
+        "Brokk AI",
+        "brokkbot-staging\\[bot\\]",
+        "brokk-bot <noreply-brokk-bot@brokk\\.ai>"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Charlie",
-      "author_patterns": [],
-      "text_patterns": [
+      "identity_patterns": [
+        "CharlieHelps",
         "CharlieHelps <charlie@charlielabs\\.ai>"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Claude Code",
-      "author_patterns": [
-        "Claude (?:Opus|Sonnet|Haiku|Fable)[^<]*<noreply@anthropic\\.com>",
-        "Claude\\s*<noreply@anthropic\\.com>",
+      "identity_patterns": [
+        "Claude Code",
+        "Claude[^<]*<noreply@anthropic\\.com>",
         "Claude[^<]*<claude@anthropic\\.com>"
       ],
-      "text_patterns": [
-        "Claude Code",
-        "Claude (?:Opus|Sonnet|Haiku|Fable)[^<]*<noreply@anthropic\\.com>",
-        "Claude\\s*<noreply@anthropic\\.com>"
-      ],
       "branch_patterns": [
+        "(?:^|/)claudecode/",
         "(?:^|/)claude/"
       ],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Cline",
-      "author_patterns": [],
-      "text_patterns": [
-        "Cline"
+      "identity_patterns": [
+        "cline-cloud\\[bot\\]",
+        "cline-cloud\\[bot\\] <276134852\\+cline-cloud\\[bot\\]@users\\.noreply\\.github\\.com>",
+        "Cline Agent <cline-agent@users\\.noreply\\.github\\.com>"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "CodeBuddy",
-      "author_patterns": [],
-      "text_patterns": [
+      "identity_patterns": [
         "CodeBuddy",
         "CodeBuddy Code",
-        "CodeBuddy(?: Code)? <(?:noreply@tencent\\.com|noreply@codebuddy\\.ai|noreply@cnb\\.cool|noreply@codebuddy\\.dev)>"
+        "CodeBuddy(?: Code)? <noreply@tencent\\.com>",
+        "CodeBuddy(?: Code)? <noreply@codebuddy\\.ai>",
+        "CodeBuddy(?: Code)? <noreply@cnb\\.cool>",
+        "CodeBuddy(?: Code)? <noreply@codebuddy\\.dev>"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Codegen",
-      "author_patterns": [
-        "codegen-sh\\[bot\\]"
-      ],
-      "text_patterns": [
+      "identity_patterns": [
+        "codegen-sh\\[bot\\]",
         "codegen-sh\\[bot\\] <131295404\\+codegen-sh\\[bot\\]@users\\.noreply\\.github\\.com>"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Codex",
-      "author_patterns": [
-        "codex@openai\\.com"
-      ],
-      "text_patterns": [
+      "identity_patterns": [
         "Codex",
         "OpenAI Codex",
-        "(?:OpenAI )?Codex <(?:codex|noreply)@openai\\.com>"
+        "Codex <codex@openai\\.com>",
+        "Codex <noreply@openai\\.com>",
+        "OpenAI Codex <codex@openai\\.com>",
+        "OpenAI Codex <noreply@openai\\.com>"
       ],
       "branch_patterns": [
         "(?:^|/)codex/"
       ],
       "label_patterns": [
         "^codex$"
-      ]
+      ],
+      "raw_message_signatures": []
     },
     {
       "name": "Continue",
-      "author_patterns": [
-        "Continue <noreply@continue\\.dev>"
-      ],
-      "text_patterns": [
+      "identity_patterns": [
         "Continue",
         "Continue <noreply@continue\\.dev>"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Copilot",
-      "author_patterns": [
-        "copilot-swe-agent(?:\\[bot\\])?",
+      "identity_patterns": [
+        "copilot-swe-agent\\[bot\\]",
         "Copilot <[0-9]+\\+Copilot@users\\.noreply\\.github\\.com>",
-        "(?:GitHub )?Copilot <copilot@github\\.com>"
-      ],
-      "text_patterns": [
-        "Copilot",
-        "Copilot <[0-9]+\\+Copilot@users\\.noreply\\.github\\.com>",
-        "(?:GitHub )?Copilot <copilot@github\\.com>"
+        "Copilot <copilot@github\\.com>",
+        "GitHub Copilot <copilot@github\\.com>",
+        "GitHub Copilot"
       ],
       "branch_patterns": [
         "(?:^|/)copilot/"
       ],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Crush",
-      "author_patterns": [],
-      "text_patterns": [
+      "identity_patterns": [
         "Crush",
         "Crush <crush@charm\\.land>"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Cursor",
-      "author_patterns": [
-        "cursoragent@cursor\\.com"
-      ],
-      "text_patterns": [
-        "Cursor(?!\\s+Bugbot\\b)",
-        "Cursor(?: Agent)? <cursoragent@cursor\\.com>"
+      "identity_patterns": [
+        "Cursor",
+        "Cursor Agent <cursoragent@cursor\\.com>",
+        "Cursor <cursoragent@cursor\\.com>",
+        "cursoragent"
       ],
       "branch_patterns": [
         "(?:^|/)cursor/"
       ],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
+    },
+    {
+      "name": "DeepSeek Harness",
+      "identity_patterns": [
+        "DeepSeek Harness",
+        "DeepSeek Harness <deepseek-harness@users\\.noreply\\.github\\.com>"
+      ],
+      "branch_patterns": [],
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Devin",
-      "author_patterns": [
-        "devin-ai-integration\\[bot\\]"
-      ],
-      "text_patterns": [
-        "Devin(?:[.:]|\\s*\\([^)]*\\))?$",
-        "Devin AI <158243242\\+devin-ai-integration\\[bot\\]@users\\.noreply\\.github\\.com>",
-        "devin-ai-integration\\[bot\\]"
+      "identity_patterns": [
+        "devin-ai-integration\\[bot\\]",
+        "Devin",
+        "Devin(?: AI)? <158243242\\+devin-ai-integration\\[bot\\]@users\\.noreply\\.github\\.com>",
+        "devin-ai-integration\\[bot\\] <158243242\\+devin-ai-integration\\[bot\\]@users\\.noreply\\.github\\.com>"
       ],
       "branch_patterns": [
         "(?:^|/)devin/"
       ],
-      "label_patterns": []
-    },
-    {
-      "name": "DeepSeek Harness",
-      "author_patterns": [],
-      "text_patterns": [],
-      "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Factory Droid",
-      "author_patterns": [
-        "factory-droid\\[bot\\]"
-      ],
-      "text_patterns": [
+      "identity_patterns": [
+        "factory-droid\\[bot\\]",
         "factory-droid\\[bot\\] <138933559\\+factory-droid\\[bot\\]@users\\.noreply\\.github\\.com>"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Gemini",
-      "author_patterns": [],
-      "text_patterns": [
+      "identity_patterns": [
+        "gemini-code-assist\\[bot\\]",
+        "gemini-code-assist\\[bot\\] <176961590\\+gemini-code-assist\\[bot\\]@users\\.noreply\\.github\\.com>",
         "Gemini CLI",
-        "Gemini Code Assist",
-        "gemini-code-assist",
-        "gemini-code-assist\\[bot\\] <176961590\\+gemini-code-assist\\[bot\\]@users\\.noreply\\.github\\.com>"
+        "Gemini CLI <gemini-cli@google\\.com>"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Goose",
-      "author_patterns": [],
-      "text_patterns": [
+      "identity_patterns": [
         "Goose"
       ],
       "branch_patterns": [],
-      "label_patterns": []
-    },
-    {
-      "name": "Lovable",
-      "author_patterns": [
-        "lovable-dev\\[bot\\]",
-        "gpt-engineer-app\\[bot\\]"
-      ],
-      "text_patterns": [
-        "gpt-engineer-app\\[bot\\] <159125892\\+gpt-engineer-app\\[bot\\]@users\\.noreply\\.github\\.com>"
-      ],
-      "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Gru",
-      "author_patterns": [
-        "gru-agent\\[bot\\]"
-      ],
-      "text_patterns": [
+      "identity_patterns": [
+        "gru-agent\\[bot\\]",
         "gru-agent\\[bot\\] <185149714\\+gru-agent\\[bot\\]@users\\.noreply\\.github\\.com>"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
+    },
+    {
+      "name": "Huawei CodeArts",
+      "identity_patterns": [
+        "CodeArts Agent"
+      ],
+      "branch_patterns": [],
+      "label_patterns": [],
+      "raw_message_signatures": []
+    },
+    {
+      "name": "iFlow CLI",
+      "identity_patterns": [
+        "iFlow CLI"
+      ],
+      "branch_patterns": [],
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Jules",
-      "author_patterns": [
-        "google-labs-jules\\[bot\\]"
-      ],
-      "text_patterns": [
+      "identity_patterns": [
+        "google-labs-jules\\[bot\\]",
+        "google-labs-jules\\[bot\\] <161369871\\+google-labs-jules\\[bot\\]@users\\.noreply\\.github\\.com>",
         "Google Jules",
-        "Jules \\(Google\\)",
-        "google-labs-jules\\[bot\\] <161369871\\+google-labs-jules\\[bot\\]@users\\.noreply\\.github\\.com>"
+        "Jules \\(Google\\)"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Junie",
-      "author_patterns": [
-        "jetbrains-junie\\[bot\\]"
-      ],
-      "text_patterns": [
-        "Junie",
-        "Junie <junie@jetbrains\\.com>"
+      "identity_patterns": [
+        "jetbrains-junie\\[bot\\]",
+        "jetbrains-junie\\[bot\\] <(?:201638009\\+)?jetbrains-junie\\[bot\\]@users\\.noreply\\.github\\.com>",
+        "Junie <junie@jetbrains\\.com>",
+        "Junie"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Kilo Code",
-      "author_patterns": [
+      "identity_patterns": [
         "kilo-code-bot\\[bot\\]",
-        "kiloconnect\\[bot\\]"
-      ],
-      "text_patterns": [
-        "Kilo Code",
-        "kiloconnect\\[bot\\] <240665456\\+kiloconnect\\[bot\\]@users\\.noreply\\.github\\.com>"
+        "kiloconnect\\[bot\\]",
+        "kiloconnect\\[bot\\] <240665456\\+kiloconnect\\[bot\\]@users\\.noreply\\.github\\.com>",
+        "Kilo Code"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Kimi Code",
-      "author_patterns": [],
-      "text_patterns": [
+      "identity_patterns": [
         "Kimi Code",
-        "Kimi(?: Code)? <noreply@moonshot\\.(?:cn|ai)>"
+        "Kimi Code CLI",
+        "Kimi(?: Code)? <noreply@moonshot\\.cn>"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Kiro",
-      "author_patterns": [],
-      "text_patterns": [
+      "identity_patterns": [
         "Kiro",
-        "Kiro <kiro-noreply@amazon\\.com>",
-        "Kiro Agent <244629292\\+kiro-agent@users\\.noreply\\.github\\.com>"
+        "Kiro CLI",
+        "Kiro Agent <244629292\\+kiro-agent@users\\.noreply\\.github\\.com>",
+        "kiro-agent\\[bot\\]",
+        "kiro-agent\\[bot\\] <245459735\\+kiro-agent\\[bot\\]@users\\.noreply\\.github\\.com>"
       ],
       "branch_patterns": [
         "(?:^|/)kiro/"
       ],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "LangChain Open SWE",
-      "author_patterns": [
+      "identity_patterns": [
         "open-swe\\[bot\\]",
-        "open-swe-dev\\[bot\\]"
-      ],
-      "text_patterns": [
-        "Open SWE",
-        "open-swe\\[bot\\]",
-        "open-swe-dev\\[bot\\]"
+        "open-swe\\[bot\\] <(?:215916821\\+)?open-swe\\[bot\\]@users\\.noreply\\.github\\.com>",
+        "Open SWE"
       ],
       "branch_patterns": [
         "(?:^|/)open-swe/"
       ],
-      "label_patterns": []
+      "label_patterns": [
+        "^open-swe$"
+      ],
+      "raw_message_signatures": []
     },
     {
       "name": "Letta Code",
-      "author_patterns": [],
-      "text_patterns": [
+      "identity_patterns": [
         "Letta Code",
         "Letta(?: Code)? <noreply@letta\\.com>"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
+    },
+    {
+      "name": "Lovable",
+      "identity_patterns": [
+        "lovable-dev\\[bot\\]",
+        "gpt-engineer-app\\[bot\\]",
+        "gpt-engineer-app\\[bot\\] <159125892\\+gpt-engineer-app\\[bot\\]@users\\.noreply\\.github\\.com>"
+      ],
+      "branch_patterns": [],
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Microsoft Amplifier",
-      "author_patterns": [],
-      "text_patterns": [
-        "Amplifier <240397093\\+microsoft-amplifier@users\\.noreply\\.github\\.com>"
+      "identity_patterns": [
+        "Amplifier <240397093\\+microsoft-amplifier@users\\.noreply\\.github\\.com>",
+        "Amplifier"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "MiMo Code",
-      "author_patterns": [],
-      "text_patterns": [],
+      "identity_patterns": [
+        "MiMo Code",
+        "MiMo-Code <noreply@mimo\\.xiaomi\\.com>"
+      ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "MiniMax Code",
-      "author_patterns": [],
-      "text_patterns": [],
+      "identity_patterns": [
+        "MiniMax Code",
+        "MiniMax Code <noreply@minimax\\.io>"
+      ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Mistral Vibe",
-      "author_patterns": [
-        "vibe@mistral\\.ai"
-      ],
-      "text_patterns": [
-        "Mistral Vibe",
-        "Mistral Vibe <vibe@mistral\\.ai>"
+      "identity_patterns": [
+        "mistral-vibe",
+        "Vibe Nuage Agent <vibe@mistral\\.ai>",
+        "Mistral Vibe <vibe@mistral\\.ai>",
+        "Mistral Vibe"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Ona",
-      "author_patterns": [],
-      "text_patterns": [
+      "identity_patterns": [
         "Ona <no-reply@ona\\.com>"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "OpenCode",
-      "author_patterns": [],
-      "text_patterns": [
+      "identity_patterns": [
         "OpenCode",
-        "OpenCode <noreply@opencode\\.ai>"
+        "OpenCode <noreply@opencode\\.ai>",
+        "opencode-agent\\[bot\\]",
+        "opencode-agent\\[bot\\] <opencode-agent\\[bot\\]@users\\.noreply\\.github\\.com>"
       ],
       "branch_patterns": [
         "(?:^|/)opencode/"
       ],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "OpenHands",
-      "author_patterns": [
-        "openhands@all-hands\\.dev"
-      ],
-      "text_patterns": [
-        "OpenHands <openhands@all-hands\\.dev>"
+      "identity_patterns": [
+        "openhands-agent",
+        "OpenHands <openhands@all-hands\\.dev>",
+        "OpenHands"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Pi",
-      "author_patterns": [],
-      "text_patterns": [
+      "identity_patterns": [
         "Pi",
         "Pi Coding Agent"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Plandex",
-      "author_patterns": [],
-      "text_patterns": [],
+      "identity_patterns": [],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": [
+        "(?m)^🤖\\s*Plandex\\s*→"
+      ]
+    },
+    {
+      "name": "Qoder",
+      "identity_patterns": [
+        "Qoder",
+        "Qoder <noreply@qoder\\.com>"
+      ],
+      "branch_patterns": [],
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Qwen Code",
-      "author_patterns": [],
-      "text_patterns": [
+      "identity_patterns": [
         "Qwen Code",
         "Qwen-Coder <qwen-coder@alibabacloud\\.com>",
         "Qwen Code <qwen@tongyi\\.aliyun\\.com>"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
-      "name": "Qoder",
-      "author_patterns": [],
-      "text_patterns": [
-        "Qoder",
-        "Qoder <noreply@qoder\\.com>"
+      "name": "Replit Agent",
+      "identity_patterns": [
+        "replit-agent",
+        "Replit"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": [
+        "(?mi)^Replit-Commit-Author:\\s*Agent\\s*$"
+      ]
     },
     {
       "name": "Roo Code",
-      "author_patterns": [
-        "roomote@roocode\\.com"
-      ],
-      "text_patterns": [
+      "identity_patterns": [
         "Roo Code <roomote@roocode\\.com>"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Roomote",
-      "author_patterns": [
-        "roomote-roomote"
+      "identity_patterns": [
+        "roomote-roomote",
+        "roomote\\[bot\\] <219738659\\+roomote\\[bot\\]@users\\.noreply\\.github\\.com>"
       ],
-      "text_patterns": [],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Sentry Seer",
-      "author_patterns": [
-        "seer-by-sentry\\[bot\\]"
+      "identity_patterns": [
+        "seer-by-sentry\\[bot\\]",
+        "seer-by-sentry\\[bot\\] <157164994\\+seer-by-sentry\\[bot\\]@users\\.noreply\\.github\\.com>"
       ],
-      "text_patterns": [],
       "branch_patterns": [
         "(?:^|/)seer/fix/"
       ],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Sketch",
-      "author_patterns": [
-        "hello@sketch\\.dev"
-      ],
-      "text_patterns": [
+      "identity_patterns": [
         "Sketch <hello@sketch\\.dev>"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Sweep",
-      "author_patterns": [
-        "sweep-ai\\[bot\\]"
-      ],
-      "text_patterns": [
+      "identity_patterns": [
+        "sweep-ai\\[bot\\]",
+        "sweep-ai-deprecated\\[bot\\]",
         "sweep-ai\\[bot\\] <128439645\\+sweep-ai\\[bot\\]@users\\.noreply\\.github\\.com>"
       ],
-      "branch_patterns": [],
-      "label_patterns": []
+      "branch_patterns": [
+        "(?:^|/)sweep/"
+      ],
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Trae",
-      "author_patterns": [],
-      "text_patterns": [
-        "Trae",
+      "identity_patterns": [
         "traeagent <traeagent@users\\.noreply\\.github\\.com>"
       ],
       "branch_patterns": [
         "(?:^|/)trae/agent-"
       ],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Verdent",
-      "author_patterns": [],
-      "text_patterns": [],
+      "identity_patterns": [
+        "Verdent",
+        "Verdent(?: AI)? <(?:verdent|noreply)@verdent\\.ai>"
+      ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Warp",
-      "author_patterns": [
-        "Warp Agent <agent@warp\\.dev>",
-        "Oz <oz-agent@warp\\.dev>"
-      ],
-      "text_patterns": [
+      "identity_patterns": [
         "Warp <agent@warp\\.dev>",
+        "Warp Agent <agent@warp\\.dev>",
+        "oz-agent",
         "Oz <oz-agent@warp\\.dev>"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "Windsurf",
-      "author_patterns": [],
-      "text_patterns": [
+      "identity_patterns": [
         "Windsurf",
         "windsurf-bot\\[bot\\] <189301087\\+windsurf-bot\\[bot\\]@users\\.noreply\\.github\\.com>"
       ],
       "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     },
     {
       "name": "ZCode",
-      "author_patterns": [],
-      "text_patterns": [
+      "identity_patterns": [
+        "ZCode <noreply@z\\.ai>",
         "ZCode"
       ],
       "branch_patterns": [],
-      "label_patterns": []
-    },
-    {
-      "name": "Huawei CodeArts",
-      "author_patterns": [],
-      "text_patterns": [],
-      "branch_patterns": [],
-      "label_patterns": []
-    },
-    {
-      "name": "Replit Agent",
-      "author_patterns": [
-        "replit-agent"
-      ],
-      "text_patterns": [],
-      "branch_patterns": [],
-      "label_patterns": []
-    },
-    {
-      "name": "iFlow CLI",
-      "author_patterns": [],
-      "text_patterns": [],
-      "branch_patterns": [],
-      "label_patterns": []
+      "label_patterns": [],
+      "raw_message_signatures": []
     }
   ]
 }

@@ -1,3 +1,3 @@
 """Offline PR coding-agent trace detection."""
 
-VERSION = "V1.1"
+VERSION = "V1.3"

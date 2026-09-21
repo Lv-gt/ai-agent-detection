@@ -82,7 +82,7 @@ def run(input_path, output_dir, workers=4, shard_size=500, sample_size=None, dee
     pool = events = None
     started = time.monotonic()
     try:
-        check = preflight(path, registry.config, deep_check=deep_check)
+        check = preflight(path, deep_check=deep_check)
         limits = ranges(path, shard_size, sample_size)
         selected_count = sum(item[2] for item in limits)
         if sample_size is None and selected_count != check["target_count"]:

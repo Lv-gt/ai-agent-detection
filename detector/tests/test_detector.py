@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from detector_core.input_db import detect_one, preflight
-from detector_core.matching import EvidenceScanner, normalize_text
+from detector_core.matching import EvidenceScanner, normalize_target, normalize_text
 from detector_core.registry import Registry
 from detector_core.util import readonly
 
@@ -20,56 +20,49 @@ def fixture(root):
     root.mkdir()
     c = sqlite3.connect(root / "pr_agent_inputs.sqlite3")
     c.executescript("""
-    CREATE TABLE metadata(key TEXT PRIMARY KEY,value TEXT);
     CREATE TABLE target_prs(
         pr_id INTEGER PRIMARY KEY,repo_id INTEGER,pr_number INTEGER,expected_author_id INTEGER,
-        collection_status TEXT,commit_total_count INTEGER,commit_observed_count INTEGER,
-        commit_observation_status TEXT,label_observed_count INTEGER,label_event_observed_count INTEGER
+        collection_status TEXT
     );
     CREATE TABLE pr_details(
         pr_id INTEGER PRIMARY KEY,repo_id INTEGER,pr_number INTEGER,author_database_id INTEGER,
-        author_login TEXT,author_name TEXT,author_email TEXT,body_markdown TEXT,head_ref_name TEXT,
-        created_at TEXT,collected_at_utc TEXT
+        author_login TEXT,author_name TEXT,author_email TEXT,body_markdown TEXT,head_ref_name TEXT
     );
     CREATE TABLE pr_commits(
-        pr_id INTEGER,ordinal INTEGER,sha TEXT,message TEXT,author_name TEXT,author_email TEXT,
-        author_user_login TEXT,author_user_database_id INTEGER,committed_date TEXT,
-        PRIMARY KEY(pr_id,ordinal)
+        pr_id INTEGER,sha TEXT,message TEXT,author_name TEXT,author_email TEXT,
+        author_user_login TEXT,author_user_database_id INTEGER,
+        PRIMARY KEY(pr_id,sha)
     );
-    CREATE TABLE pr_labels(pr_id INTEGER,ordinal INTEGER,name TEXT,PRIMARY KEY(pr_id,ordinal));
+    CREATE TABLE pr_labels(pr_id INTEGER,name TEXT,PRIMARY KEY(pr_id,name));
     CREATE TABLE pr_label_events(
         pr_id INTEGER,ordinal INTEGER,label_name TEXT,created_at TEXT,actor_database_id INTEGER,
         PRIMARY KEY(pr_id,ordinal)
     );
     """)
-    c.execute("INSERT INTO metadata VALUES('schema_version','standalone-test')")
     bodies = [
         "Generated with Kimi Code",
         "https://chatgpt.com/codex/tasks/task_123",
         "Support Qwen Code models",
         "",
         "Generated with Claude Code",
-        "Generated with Alibaba Lingma",
+        "Generated with Lingma",
     ]
     for i in range(1, 7):
         repo, author = ((10, 20) if i <= 2 else (10, 21) if i <= 4 else (11, 22))
         unavailable = i == 5
         status = "terminal_unavailable" if unavailable else "completed"
-        obs = "incomplete" if i == 4 else "complete"
         c.execute(
-            "INSERT INTO target_prs VALUES(?,?,?,?,?,?,?,?,?,?)",
-            (i, repo, i, author, status, 1, 1, obs, 0, 0),
+            "INSERT INTO target_prs VALUES(?,?,?,?,?)",
+            (i, repo, i, author, status),
         )
         if not unavailable:
             c.execute(
-                "INSERT INTO pr_details VALUES(?,?,?,?,?,?,?,?,?,?,?)",
-                (i, repo, i, author, "renamed-user", "Human", None, bodies[i - 1], "feature",
-                 "2026-01-01T00:00:00Z", "2026-09-01T00:00:00Z"),
+                "INSERT INTO pr_details VALUES(?,?,?,?,?,?,?,?,?)",
+                (i, repo, i, author, "renamed-user", "Human", None, bodies[i - 1], "feature"),
             )
             c.execute(
-                "INSERT INTO pr_commits VALUES(?,?,?,?,?,?,?,?,?)",
-                (i, 1, "sha" + str(i), "plain change", "Human", None, "human", author,
-                 "2026-01-01T00:00:00Z"),
+                "INSERT INTO pr_commits VALUES(?,?,?,?,?,?,?)",
+                (i, "sha" + str(i), "plain change", "Human", None, "human", author),
             )
     c.commit()
     c.close()
@@ -97,195 +90,212 @@ class Rules(unittest.TestCase):
         )
         return scanner.summary(), rows
 
-    def test_registry_is_57_agents_and_four_rule_fields(self):
-        self.assertEqual(len(self.registry.catalog), 57)
-        for tool, entry in self.registry.catalog.items():
-            self.assertEqual(
-                set(entry),
-                {"name", "author_patterns", "text_patterns", "branch_patterns", "label_patterns"},
-                tool,
-            )
-        expected_empty = {
-            "Baidu Comate", "DeepSeek Harness", "MiMo Code", "MiniMax Code",
-            "Plandex", "Verdent", "Huawei CodeArts", "iFlow CLI",
-        }
-        actual_empty = {
-            tool for tool, entry in self.registry.catalog.items()
-            if not any(entry[k] for k in ("author_patterns", "text_patterns", "branch_patterns", "label_patterns"))
-        }
-        self.assertEqual(actual_empty, expected_empty)
+    def test_registry_inventory_is_exact(self):
+        self.assertEqual(len(self.registry.catalog), 56)
+        self.assertEqual(self.registry.counts, {
+            "agents": 56,
+            "identity": 150,
+            "branch": 13,
+            "label": 2,
+            "raw_message_signature": 2,
+            "agent_specific": 165,
+            "complete_executable_inventory": 167,
+        })
+        self.assertTrue(all(any((
+            entry["identity_patterns"], entry["branch_patterns"],
+            entry["label_patterns"], entry["raw_message_signatures"],
+        )) for entry in self.registry.catalog.values()))
 
-    def test_excluded_candidates_are_not_in_strict_catalog(self):
-        removed = (
-            "Generic AI", "ChatGPT", "Factory", "CodeRabbit", "PR-Agent", "Qodo",
+    def test_registry_has_only_new_rule_fields(self):
+        for tool, entry in self.registry.catalog.items():
+            self.assertEqual(set(entry), {
+                "name", "identity_patterns", "branch_patterns", "label_patterns", "raw_message_signatures"
+            }, tool)
+        source = (ROOT / "scripts/detector_core/registry.py").read_text(encoding="utf-8")
+        self.assertNotIn("author_patterns", source)
+        self.assertNotIn("text_patterns", source)
+
+    def test_excluded_candidates_are_not_in_catalog(self):
+        for name in (
+            "Baidu Comate", "Generic AI", "ChatGPT", "Factory", "CodeRabbit", "PR-Agent", "Qodo",
             "Sourcery", "Serena", "Rulesync", "SpecKit", "Taskmaster", "Superpowers",
             "Specstory", "Tessl", "Paperclip", "DeepSource Autofix", "Fly", "GPT-Engineer",
-        )
-        for name in removed:
+        ):
             self.assertNotIn(name, self.registry.catalog)
 
-    def test_canonical_product_names_work_only_in_attribution_grammar(self):
+    def test_global_grammar_inventory(self):
+        grammar = self.registry.grammar
+        for verb in ("built", "made", "coded", "produced", r"co(?:[ \t]+|-)?authored", r"co(?:[ \t]+|-)?developed"):
+            self.assertIn(verb, grammar["verb_patterns"])
+        self.assertEqual(grammar["connectors"], ["by", "with", "using", "via"])
+        self.assertEqual(grammar["hyphenated_prefixes"], ["generated-by", "co-authored-by", "co-developed-by"])
+        self.assertEqual(grammar["bridge_patterns"], [
+            r"assistance[ \t]+from", r"the[ \t]+assistance[ \t]+of",
+            r"help[ \t]+from", r"the[ \t]+help[ \t]+of",
+        ])
+
+    def test_basic_attribution_uses_shared_identity_table(self):
         examples = {
-            "Generated with Pi": "Pi",
-            "Implemented by Cursor": "Cursor",
-            "Written using Copilot": "Copilot",
-            "Created via Gemini CLI": "Gemini",
-            "Made with Continue": "Continue",
             "Generated with ZCode": "ZCode",
-            "Generated with Trae": "Trae",
-            "Assisted by Qoder": "Qoder",
-            "Developed with Amazon Q Developer": "Amazon Q",
+            "Implemented by Cursor": "Cursor",
+            "Authored with Kiro": "Kiro",
+            "Developed using Claude Code": "Claude Code",
+            "Written via Qoder": "Qoder",
+            "Built by Augment Code": "Augment Code",
+            "Made with Continue": "Continue",
+            "Coded using Windsurf": "Windsurf",
+            "Produced by ZCode": "ZCode",
+            "Assisted by Junie": "Junie",
         }
         for text, tool in examples.items():
             with self.subTest(text=text):
-                self.assertIn(tool, self.scan(text)[0]["tools"])
+                summary, rows = self.scan(text)
+                self.assertIn(tool, summary["tools"])
+                self.assertIn("identity", summary["categories"])
+                self.assertTrue(any(r["rule"] == "attribution" for r in rows if r["tool"] == tool))
 
+    def test_optional_colon_is_implemented_in_matcher(self):
         for text in (
+            "Generated by ZCode", "Generated by: ZCode",
+            "Generated-by ZCode", "Generated-by: ZCode",
+            "Co-authored by Kiro", "Co-authored by: Kiro",
+            "Co-authored-by Kiro", "Co-authored-by: Kiro",
+        ):
+            with self.subTest(text=text):
+                self.assertEqual(self.scan(text)[0]["status"], "agent_trace_detected")
+        rules = json.loads((ROOT / "config/rules/agents.json").read_text(encoding="utf-8"))
+        self.assertNotIn("colon_pattern", rules["attribution_grammar"])
+        self.assertNotIn("optional_colon", rules["attribution_grammar"])
+
+    def test_coauthored_and_codeveloped_variants(self):
+        for text in (
+            "Co-authored with Kiro",
+            "Co authored with Kiro",
+            "Coauthored by Kiro",
+            "Co developed using Claude Code",
+            "Codeveloped via Qoder",
+            "Co-developed-by: Qoder <noreply@qoder.com>",
+        ):
+            with self.subTest(text=text):
+                self.assertEqual(self.scan(text)[0]["status"], "agent_trace_detected")
+
+    def test_bridge_patterns_are_consumed_before_target(self):
+        examples = {
+            "Authored with assistance from Codex": "Codex",
+            "Developed with the assistance of Junie": "Junie",
+            "Built with help from Qoder": "Qoder",
+            "Built with the help of Augment Code": "Augment Code",
+        }
+        for text, tool in examples.items():
+            with self.subTest(text=text):
+                summary, rows = self.scan(text)
+                self.assertIn(tool, summary["tools"])
+                self.assertTrue(any(f"identity_pattern:{tool}" in r["detail"] or r["tool"] == tool for r in rows))
+
+    def test_markdown_link_normalization_preserves_target_start(self):
+        summary, _ = self.scan("Generated with [Cursor](https://cursor.com)")
+        self.assertIn("Cursor", summary["tools"])
+        self.assertEqual(
+            normalize_text("Generated with [Cursor](https://cursor.com)"),
+            "Generated with Cursor (https://cursor.com)",
+        )
+
+    def test_outer_markdown_emphasis_is_removed_from_target(self):
+        for text in (
+            "Generated with **Cursor**",
+            "Generated with __Cursor__",
+            "Generated with *Cursor*",
+            "Generated with _Cursor_",
+            "Generated with ***Cursor***",
+            "Generated with **Cursor** assistance",
+        ):
+            with self.subTest(text=text):
+                self.assertIn("Cursor", self.scan(text)[0]["tools"])
+        self.assertEqual(normalize_target("**Cursor** assistance"), "Cursor assistance")
+        self.assertEqual(self.scan("Generated with `Cursor`")[0]["status"], "no_trace_detected")
+
+    def test_attribution_prefix_requires_a_separator(self):
+        for text in (
+            "Generated withCodex",
+            "Generated byCodex",
+            "Generated-byCodex",
+            "Co-developed-byQoder",
+        ):
+            with self.subTest(text=text):
+                self.assertEqual(self.scan(text)[0]["status"], "no_trace_detected")
+        for text in (
+            "Generated with Codex",
+            "Generated with:Codex",
+            "Generated with : Codex",
+            "Generated-by:ZCode",
+            "Co-developed-by:Qoder",
+        ):
+            with self.subTest(text=text):
+                self.assertEqual(self.scan(text)[0]["status"], "agent_trace_detected")
+
+    def test_native_identity_and_attribution_share_same_patterns(self):
+        native, native_rows = self.author_scan(name="ZCode", email="noreply@z.ai")
+        text, text_rows = self.scan("Generated with ZCode")
+        self.assertIn("ZCode", native["tools"])
+        self.assertIn("ZCode", text["tools"])
+        self.assertTrue(any(r["detail"].startswith("identity_pattern:ZCode") for r in native_rows))
+        self.assertTrue(any(r["detail"].startswith("identity_pattern:ZCode") for r in text_rows))
+
+    def test_rendered_identity_is_login_pipe_name_email(self):
+        summary, rows = self.author_scan(
+            login="copilot-swe-agent[bot]", name="Copilot", email="copilot@github.com"
+        )
+        self.assertIn("Copilot", summary["tools"])
+        self.assertTrue(all(r["field"] == "author_identity" for r in rows if r["tool"] == "Copilot"))
+        self.assertTrue(any("copilot-swe-agent[bot] | Copilot <copilot@github.com>" in r["excerpt"] for r in rows))
+
+    def test_plain_mentions_do_not_trigger_text_identity(self):
+        for text in (
+            "Support Qwen Code models",
+            "Cursor integration docs",
             "Raspberry Pi support",
-            "Move the cursor left",
-            "Please continue processing",
-            "Run codegen before build",
-            "Factory pattern cleanup",
-            "Use Gemini 2.5 Pro API",
-            "Developed with Fly",
-            "Coded by Codegen Agent",
-            "Generated by Warp Agent Mode",
+            "https://chatgpt.com/codex/tasks/task_123",
+            "Powered by Continue",
         ):
             with self.subTest(text=text):
                 self.assertEqual(self.scan(text)[0]["status"], "no_trace_detected")
 
-    def test_model_names_are_not_standalone_text_rules(self):
+    def test_unregistered_model_names_do_not_trigger(self):
         for text in (
             "Generated with Claude Opus 4.6",
             "Generated with GPT-5.3-Codex",
             "Generated with DeepSeek-R1",
             "Generated with Kimi K3",
-            "Generated with MiMo-v2.5-pro",
+            "Generated with Gemini 2.5 Pro",
         ):
             with self.subTest(text=text):
                 self.assertEqual(self.scan(text)[0]["status"], "no_trace_detected")
 
-    def test_model_family_name_does_not_stand_in_for_agent_surface(self):
-        self.assertEqual(self.scan("Generated with Gemini 2.5 Pro")[0]["status"], "no_trace_detected")
-        self.assertEqual(self.scan("Generated with Gemini")[0]["status"], "no_trace_detected")
-        self.assertIn("Gemini", self.scan("Generated with Gemini CLI")[0]["tools"])
-        self.assertIn("Gemini", self.scan("Generated with Gemini Code Assist")[0]["tools"])
+    def test_raw_message_signatures_are_identity_evidence(self):
+        cases = {
+            "🤖 Plandex → implement parser": "Plandex",
+            "Replit-Commit-Author: Agent": "Replit Agent",
+        }
+        for message, tool in cases.items():
+            with self.subTest(message=message):
+                summary, rows = self.scan(message, source="commit", field="message")
+                self.assertIn(tool, summary["tools"])
+                self.assertEqual(summary["categories"], ["identity"])
+                hit = [r for r in rows if r["tool"] == tool]
+                self.assertTrue(hit)
+                self.assertTrue(all(r["rule"] == "raw_message_signature" for r in hit))
 
-    def test_structured_model_identity_is_allowed_for_claude(self):
-        summary, rows = self.author_scan(
-            login="claude", name="Claude Opus 4.6", email="noreply@anthropic.com"
-        )
-        self.assertIn("Claude Code", summary["tools"])
-        self.assertEqual(rows[0]["field"], "author_identity")
-        self.assertIn("noreply@anthropic.com", rows[0]["excerpt"])
+    def test_raw_message_signatures_are_commit_message_only(self):
+        for message in ("🤖 Plandex → implement parser", "Replit-Commit-Author: Agent"):
+            with self.subTest(message=message):
+                self.assertEqual(self.scan(message, source="pr", field="body_markdown")[0]["status"], "no_trace_detected")
 
-        human, _ = self.author_scan(
-            login="alice", name="Claude Opus 4.6", email="alice@example.com"
-        )
-        self.assertNotIn("Claude Code", human["tools"])
-
-    def test_fable_is_in_claude_structured_identity_family(self):
-        summary, rows = self.author_scan(
-            login="claude", name="Claude Fable 5", email="noreply@anthropic.com"
-        )
-        self.assertIn("Claude Code", summary["tools"])
-        self.assertTrue(any("Fable" in row["excerpt"] for row in rows if row["tool"] == "Claude Code"))
-
-        coauthor = "Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
-        summary, rows = self.scan(coauthor, source="commit", field="message")
-        self.assertIn("Claude Code", summary["tools"])
-        self.assertTrue(any("Fable" in row["excerpt"] for row in rows if row["tool"] == "Claude Code"))
-
-    def test_author_identity_is_one_normalized_field(self):
-        summary, rows = self.author_scan(
-            login="copilot-swe-agent[bot]", name="Copilot", email="copilot@github.com"
-        )
-        self.assertIn("Copilot", summary["tools"])
-        copilot_rows = [r for r in rows if r["tool"] == "Copilot"]
-        self.assertGreaterEqual(len(copilot_rows), 2)
-        self.assertTrue(all(r["field"] == "author_identity" for r in copilot_rows))
-        self.assertIn("copilot-swe-agent[bot] | Copilot <copilot@github.com>", copilot_rows[0]["excerpt"])
-
-    def test_human_name_collision_does_not_make_pi_author(self):
-        summary, _ = self.author_scan(login="alice", name="Pi", email="human@example.com")
-        self.assertNotIn("Pi", summary["tools"])
-
-    def test_coauthor_is_just_another_global_text_attribution_prefix(self):
-        text = "Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
-        for source, field in (("commit", "message"), ("pr", "body_markdown")):
-            with self.subTest(source=source):
-                summary, rows = self.scan(text, source=source, field=field)
-                self.assertIn("Claude Code", summary["tools"])
-                hits = [row for row in rows if row["tool"] == "Claude Code"]
-                self.assertGreaterEqual(len(hits), 1)
-                self.assertTrue(all(row["rule"] == "text_attribution" for row in hits))
-
-    def test_coauthor_uses_exactly_the_same_substring_pattern_logic_as_other_text(self):
-        text = "Co-Authored-By: Amazon Q Developer"
-        summary, rows = self.scan(text, source="commit", field="message")
-        self.assertIn("Amazon Q", summary["tools"])
-        details = {r["detail"] for r in rows if r["tool"] == "Amazon Q"}
-        self.assertEqual(details, {"text_pattern:Amazon Q Developer"})
-
-        # Accepted limitation of the deliberately simple unified text matcher:
-        # a short ambiguous pattern is not rescued by hidden email/name semantics.
-        pi_human = "Co-Authored-By: Pi <human@example.com>"
-        self.assertIn("Pi", self.scan(pi_human, source="commit", field="message")[0]["tools"])
-
-    def test_no_coauthor_specific_matcher_remains_in_core(self):
-        matching_source = (ROOT / "scripts" / "detector_core" / "matching.py").read_text(encoding="utf-8")
-        registry_source = (ROOT / "scripts" / "detector_core" / "registry.py").read_text(encoding="utf-8")
-        combined = matching_source + "\n" + registry_source
-        for forbidden in (
-            "COAUTHOR =",
-            "coauthor_matches",
-            "render_coauthor",
-            "_structured_text_pattern",
-            "text_coauthor",
-        ):
-            self.assertNotIn(forbidden, combined)
-
-    def test_task_url_channel_is_removed(self):
-        for text in (
-            "https://chatgpt.com/codex/tasks/task_123",
-            "See [the task](https://chatgpt.com/codex/tasks/task_123)",
-        ):
-            with self.subTest(text=text):
-                summary, rows = self.scan(text)
-                self.assertEqual(summary["status"], "no_trace_detected")
-                self.assertEqual(rows, [])
-
-    def test_minimal_markdown_link_normalization_and_surrounding_text(self):
-        cases = (
-            "Most changes were generated with Claude Code",
-            "🤖 Generated with Claude Code",
-            "Generated with [Cursor](https://cursor.com)",
-            "Developed with the help of CodeBuddy",
-            "Developed with assistance from CodeBuddy",
-        )
-        for text in cases:
-            with self.subTest(text=text):
-                self.assertEqual(self.scan(text)[0]["status"], "agent_trace_detected")
-
-        # No general Markdown wrapper stripping: the only normalization kept in
-        # this candidate is [visible text](URL) -> visible text (URL).
-        self.assertEqual(self.scan("Generated with **Codex**")[0]["status"], "no_trace_detected")
-        self.assertEqual(
-            normalize_text("Generated with [Claude Code](https://claude.com/claude-code)"),
-            "Generated with Claude Code (https://claude.com/claude-code)",
-        )
-
-    def test_negation_is_deliberately_not_semantically_parsed(self):
-        self.assertIn("Codex", self.scan("This PR was not generated with Codex")[0]["tools"])
-
-    def test_overlapping_patterns_are_all_emitted_for_audit(self):
-        summary, rows = self.scan("Co-Authored-By: Amp <amp@ampcode.com>", source="commit", field="message")
-        self.assertIn("Amp", summary["tools"])
-        hits = [r for r in rows if r["tool"] == "Amp" and r["rule"] == "text_attribution"]
-        details = {r["detail"] for r in hits}
-        self.assertIn("text_pattern:Amp", details)
-        self.assertIn(r"text_pattern:Amp <amp@ampcode\.com>", details)
-        self.assertGreaterEqual(len(hits), 2)
+    def test_overlapping_identity_patterns_are_all_emitted(self):
+        summary, rows = self.scan("Co-developed-by: Qoder <noreply@qoder.com>", source="commit", field="message")
+        self.assertIn("Qoder", summary["tools"])
+        details = {r["detail"] for r in rows if r["tool"] == "Qoder"}
+        self.assertTrue(any("identity_pattern:Qoder;" in d for d in details))
+        self.assertTrue(any(r"identity_pattern:Qoder <noreply@qoder\.com>" in d for d in details))
 
     def test_branch_and_label_channels(self):
         rows = []
@@ -295,62 +305,9 @@ class Rules(unittest.TestCase):
         scanner.metadata("codex", "labels", 1, "name")
         summary = scanner.summary()
         self.assertIn("Codex", summary["tools"])
+        self.assertEqual(set(summary["categories"]), {"branch", "label"})
         self.assertTrue(summary["metadata_agent_trace"])
         self.assertEqual({r["rule"] for r in rows}, {"branch", "label"})
-
-    def test_actor_attribution(self):
-        target, _ = self.scan("Generated with Codex", actor=2)
-        other, _ = self.scan("Generated with Codex", actor=99)
-        unknown, _ = self.scan("Generated with Codex", actor=None)
-        self.assertTrue(target["target_author_agent_trace"])
-        self.assertFalse(target["other_actor_agent_trace"])
-        self.assertTrue(other["other_actor_agent_trace"])
-        self.assertFalse(other["target_author_agent_trace"])
-        self.assertTrue(unknown["unknown_actor_agent_trace"])
-
-    def test_non_agent_bot_identity_produces_no_trace(self):
-        summary, rows = self.author_scan(login="dependabot[bot]", name="dependabot[bot]")
-        self.assertEqual(summary["status"], "no_trace_detected")
-        self.assertEqual(summary["tools"], [])
-        self.assertEqual(rows, [])
-
-    def test_coding_agent_bot_identity_still_matches(self):
-        summary, _ = self.author_scan(login="factory-droid[bot]", name="factory-droid[bot]")
-        self.assertIn("Factory Droid", summary["tools"])
-
-    def test_unknown_bot_author_does_not_stop_text_scan(self):
-        rows = []
-        scanner = EvidenceScanner(self.registry, rows.append)
-        scanner.begin({"pr_id": 1, "target_author_id": 2})
-        scanner.identity(
-            {"login": "some-new-bot[bot]", "email": "", "name": ""},
-            "commit", "a", "login", "email", "name", 2,
-        )
-        scanner.text("Generated with Codex", "commit", "a", "message", 2)
-        self.assertIn("Codex", scanner.summary()["tools"])
-
-    def test_normalize_text_preserves_non_link_characters_and_urls(self):
-        self.assertEqual(normalize_text("Generated with future_agent"), "Generated with future_agent")
-        self.assertEqual(normalize_text("Generated with future~agent"), "Generated with future~agent")
-        self.assertEqual(
-            normalize_text("Generated with [Cursor](https://cursor.com)"),
-            "Generated with Cursor (https://cursor.com)",
-        )
-
-    def test_powered_is_not_an_attribution_verb(self):
-        self.assertEqual(self.scan("Powered by Continue")[0]["status"], "no_trace_detected")
-
-    def test_known_noisy_patterns_are_tightened_without_special_case_logic(self):
-        self.assertNotIn("Cline", self.author_scan(login="alice", name="Dan Cline", email="a@example.com")[0]["tools"])
-        self.assertEqual(self.scan("Generated by Codegen")[0]["status"], "no_trace_detected")
-        self.assertEqual(self.scan("Generated by Sweep")[0]["status"], "no_trace_detected")
-        self.assertEqual(self.scan("Generated by Jules")[0]["status"], "no_trace_detected")
-        self.assertEqual(self.scan("Generated by Warp")[0]["status"], "no_trace_detected")
-        self.assertEqual(self.scan("Generated by Warp Agent Mode")[0]["status"], "no_trace_detected")
-        self.assertIn(
-            "Warp",
-            self.scan("Co-Authored-By: Warp <agent@warp.dev>", source="commit", field="message")[0]["tools"],
-        )
 
     def test_branch_path_segment_boundary_is_explicit(self):
         rows = []
@@ -358,74 +315,41 @@ class Rules(unittest.TestCase):
         scanner.begin({"pr_id": 1, "target_author_id": 2})
         scanner.metadata("feature/nottrae/agent-123", "branches", 1, "head_ref_name")
         self.assertNotIn("Trae", scanner.summary()["tools"])
+        scanner.metadata("user/trae/agent-123", "branches", 1, "head_ref_name")
+        self.assertIn("Trae", scanner.summary()["tools"])
 
-        rows2 = []
-        scanner2 = EvidenceScanner(self.registry, rows2.append)
-        scanner2.begin({"pr_id": 2, "target_author_id": 2})
-        scanner2.metadata("user/trae/agent-123", "branches", 2, "head_ref_name")
-        self.assertIn("Trae", scanner2.summary()["tools"])
+    def test_actor_attribution_for_identity_evidence(self):
+        target, _ = self.scan("Generated with Codex", actor=2)
+        other, _ = self.scan("Generated with Codex", actor=99)
+        unknown, _ = self.scan("Generated with Codex", actor=None)
+        self.assertTrue(target["target_author_agent_trace"])
+        self.assertTrue(other["other_actor_agent_trace"])
+        self.assertTrue(unknown["unknown_actor_agent_trace"])
 
+    def test_non_agent_bot_identity_produces_no_trace(self):
+        summary, rows = self.author_scan(login="dependabot[bot]", name="dependabot[bot]")
+        self.assertEqual(summary["status"], "no_trace_detected")
+        self.assertEqual(rows, [])
 
-    def test_devin_final_natural_text_rule_is_simple_and_name_safe(self):
-        for text in (
-            "Generated with Devin",
-            "Generated with Devin.",
-            "Generated with Devin:",
-            "Generated with [Devin](https://devin.ai)",
-            "Generated with Devin (Cognition AI)",
-        ):
-            with self.subTest(text=text):
-                self.assertIn("Devin", self.scan(text)[0]["tools"])
-        for text in (
-            "Generated with Devin Stewart",
-            "Generated with Devin Slauenwhite",
-            "Generated with Devin (Cognition AI).",
-        ):
-            with self.subTest(text=text):
-                self.assertNotIn("Devin", self.scan(text)[0]["tools"])
-
-    def test_lovable_current_and_historical_author_identities(self):
-        current, _ = self.author_scan(login="lovable-dev[bot]", name="lovable-dev[bot]")
-        historical, _ = self.author_scan(
-            login="gpt-engineer-app[bot]",
-            name="gpt-engineer-app[bot]",
-            email="159125892+gpt-engineer-app[bot]@users.noreply.github.com",
+    def test_known_coding_agent_identities_match(self):
+        examples = (
+            ("factory-droid[bot]", "", "", "Factory Droid"),
+            ("seer-by-sentry[bot]", "", "", "Sentry Seer"),
+            ("replit-agent", "Replit Agent", "", "Replit Agent"),
+            ("lovable-dev[bot]", "", "", "Lovable"),
         )
-        generic_old, _ = self.author_scan(login="gpt-engineer", name="GPT Engineer")
-        self.assertIn("Lovable", current["tools"])
-        self.assertIn("Lovable", historical["tools"])
-        self.assertNotIn("Lovable", generic_old["tools"])
+        for login, name, email, tool in examples:
+            with self.subTest(tool=tool):
+                self.assertIn(tool, self.author_scan(login, name, email)[0]["tools"])
 
-    def test_roomote_is_separate_from_historical_roo_code(self):
-        roomote, _ = self.author_scan(login="roomote-roomote[bot]", name="roomote-roomote")
-        roo, _ = self.author_scan(login="roomote", name="Roo Code", email="roomote@roocode.com")
-        self.assertIn("Roomote", roomote["tools"])
-        self.assertNotIn("Roo Code", roomote["tools"])
-        self.assertIn("Roo Code", roo["tools"])
-
-    def test_warp_oz_identity_is_explicit_not_email_substring_accident(self):
-        oz, _ = self.author_scan(login="oz-agent", name="Oz", email="oz-agent@warp.dev")
-        warp, _ = self.author_scan(login="warp-agent", name="Warp Agent", email="agent@warp.dev")
-        accidental, _ = self.author_scan(login="other", name="Other", email="not-agent@warp.dev")
-        self.assertIn("Warp", oz["tools"])
-        self.assertIn("Warp", warp["tools"])
-        self.assertNotIn("Warp", accidental["tools"])
-
-    def test_new_frozen_author_and_branch_signatures(self):
-        seer, _ = self.author_scan(login="seer-by-sentry[bot]", name="seer-by-sentry[bot]")
-        replit, _ = self.author_scan(login="replit-agent", name="Replit Agent")
-        self.assertIn("Sentry Seer", seer["tools"])
-        self.assertIn("Replit Agent", replit["tools"])
-
-        rows = []
-        scanner = EvidenceScanner(self.registry, rows.append)
-        scanner.begin({"pr_id": 1, "target_author_id": 2})
-        scanner.metadata("seer/fix/example", "branches", 1, "head_ref_name")
-        self.assertIn("Sentry Seer", scanner.summary()["tools"])
-
-    def test_zcode_is_intentionally_active_from_v33_evidence(self):
-        self.assertIn("ZCode", self.scan("Generated with ZCode")[0]["tools"])
-
+    def test_no_old_reverse_text_matching_logic_remains(self):
+        matching_source = (ROOT / "scripts/detector_core/matching.py").read_text(encoding="utf-8")
+        registry_source = (ROOT / "scripts/detector_core/registry.py").read_text(encoding="utf-8")
+        combined = matching_source + "\n" + registry_source
+        for forbidden in ("ATTRIBUTION_PHRASE", "text_matches", "author_matches", "author_patterns", "text_patterns"):
+            self.assertNotIn(forbidden, combined)
+        self.assertIn("attribution_targets", combined)
+        self.assertIn("identity_matches", combined)
 
 class Pipeline(unittest.TestCase):
     def command(self, *args, ok=True):
@@ -443,8 +367,8 @@ class Pipeline(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             source = Path(tmp) / "input"
             fixture(source)
-            light = preflight(source, Registry().config)
-            deep = preflight(source, Registry().config, deep_check=True)
+            light = preflight(source)
+            deep = preflight(source, deep_check=True)
             self.assertEqual(light["target_count"], 6)
             self.assertEqual(light["input_integrity"], "not_run")
             self.assertEqual(deep["input_integrity"], "ok")
@@ -623,7 +547,10 @@ class Pipeline(unittest.TestCase):
             source = Path(tmp) / "input"; fixture(source)
             c = sqlite3.connect(source / "pr_agent_inputs.sqlite3")
             c.execute("UPDATE pr_details SET body_markdown=NULL,head_ref_name=NULL,author_login=NULL WHERE pr_id=1")
-            c.execute("UPDATE pr_commits SET message='Generated with Codex',author_user_login=NULL,author_name=NULL,committed_date=NULL WHERE pr_id=1")
+            c.execute(
+                "UPDATE pr_commits SET message='Generated with Codex',"
+                "author_user_login=NULL,author_name=NULL WHERE pr_id=1"
+            )
             c.commit(); c.close()
             with readonly(source / "pr_agent_inputs.sqlite3") as c:
                 scanner = EvidenceScanner(Registry(), lambda row: None)

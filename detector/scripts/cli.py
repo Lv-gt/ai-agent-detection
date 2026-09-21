@@ -3,7 +3,6 @@ import json
 import sys
 
 from detector_core.input_db import preflight
-from detector_core.registry import Registry
 from detector_core.runner import run
 from detector_core import reports
 
@@ -29,7 +28,7 @@ def main():
 
     args = parser.parse_args()
     if args.command == "preflight":
-        result = preflight(args.input, Registry().config, deep_check=args.deep_check)
+        result = preflight(args.input, deep_check=args.deep_check)
     elif args.command == "detect":
         run(args.input, args.output_dir, args.workers, args.shard_size, args.sample_size, args.deep_check)
         result = {"complete": True, "output_dir": args.output_dir, "scope": "sample" if args.sample_size else "full"}
