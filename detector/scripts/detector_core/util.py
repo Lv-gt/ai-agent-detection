@@ -49,15 +49,9 @@ def file_stamp(path):
     return {"path": str(path), "size": stat.st_size, "modified_ns": stat.st_mtime_ns}
 
 
-def as_int(value, default=0):
-    return default if value is None else int(value)
-
-
 def ensure_separate(input_path, output_dir):
     input_path = Path(input_path).resolve()
     output_dir = Path(output_dir).resolve()
-    # The detector opens the source read-only. Only reject an actual path
-    # collision with the formal output database; sibling/nested output
-    # directories are otherwise safe and useful for client workflows.
+    # Only a real collision with the output database is unsafe.
     if (output_dir / "detection.sqlite3").resolve() == input_path:
         raise ValueError("Output detection.sqlite3 would overwrite the input database")

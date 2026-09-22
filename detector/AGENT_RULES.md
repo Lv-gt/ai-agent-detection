@@ -1,17 +1,19 @@
 # Agent 规则清单
 
-> 本文档用于人工查看。机器检测只读取 `config/rules/agents.json`。
+> 本文档用于人工查看。机器检测只读取 `config/rules/agents.json`。Author 与正文规则允许重叠。
 
 - Agent：**56**
-- Identity patterns：**150**
+- Author patterns：**89**
+- Text attribution patterns：**156**
+- Author/Text 重叠：**62**
 - Branch patterns：**13**
 - Label patterns：**2**
 - Raw message signatures：**2**
-- 总可执行规则：**167**
+- 总可执行规则实例：**262**
 
 ## Abacus
 
-**Identity**
+**Text attribution**
 
 ```regex
 Abacus\.AI CLI <agent@abacus\.ai>
@@ -19,46 +21,68 @@ Abacus\.AI CLI <agent@abacus\.ai>
 
 ## Aider
 
-**Identity**
+**Author**
 
 ```regex
 \(aider\)
+```
+
+**Text attribution**
+
+```regex
 Aider .*<aider@aider\.chat>
 Aider
 ```
 
 ## Alibaba Lingma
 
-**Identity**
+**Author**
+
+```regex
+lingma-agents\[bot\]
+```
+
+**Text attribution**
 
 ```regex
 Lingma
-lingma-agents\[bot\]
 ```
 
 ## Amazon Q
 
-**Identity**
+**Author**
 
 ```regex
 amazon-q-developer\[bot\]
+amazon-q-developer\[bot\] <208079219\+amazon-q-developer\[bot\]@users\.noreply\.github\.com>
+```
+
+**Text attribution**
+
+```regex
 Amazon Q Developer
 amazon-q-developer\[bot\] <208079219\+amazon-q-developer\[bot\]@users\.noreply\.github\.com>
 ```
 
 ## Amp
 
-**Identity**
+**Author**
 
 ```regex
 ampagent
+Amp <amp@ampcode\.com>
+```
+
+**Text attribution**
+
+```regex
 Amp
 Amp <amp@ampcode\.com>
 ```
 
 ## Atlassian Rovo Dev
 
-**Identity**
+**Text attribution**
 
 ```regex
 Rovo Dev
@@ -73,7 +97,7 @@ Rovodev
 
 ## Augment Code
 
-**Identity**
+**Text attribution**
 
 ```regex
 Augment Code
@@ -86,17 +110,30 @@ Augment Code <noreply@augmentcode\.com>
 
 ## Brokk
 
-**Identity**
+**Author**
+
+```regex
+brokkbot-staging\[bot\]
+brokkbot-staging\[bot\] <237331342\+brokkbot-staging\[bot\]@users\.noreply\.github\.com>
+```
+
+**Text attribution**
 
 ```regex
 Brokk AI
-brokkbot-staging\[bot\]
 brokk-bot <noreply-brokk-bot@brokk\.ai>
 ```
 
 ## Charlie
 
-**Identity**
+**Author**
+
+```regex
+CharlieHelps
+CharlieHelps <charlie@charlielabs\.ai>
+```
+
+**Text attribution**
 
 ```regex
 CharlieHelps
@@ -105,7 +142,14 @@ CharlieHelps <charlie@charlielabs\.ai>
 
 ## Claude Code
 
-**Identity**
+**Author**
+
+```regex
+Claude[^<]*<noreply@anthropic\.com>
+Claude[^<]*<claude@anthropic\.com>
+```
+
+**Text attribution**
 
 ```regex
 Claude Code
@@ -122,17 +166,22 @@ Claude[^<]*<claude@anthropic\.com>
 
 ## Cline
 
-**Identity**
+**Author**
 
 ```regex
 cline-cloud\[bot\]
 cline-cloud\[bot\] <276134852\+cline-cloud\[bot\]@users\.noreply\.github\.com>
+```
+
+**Text attribution**
+
+```regex
 Cline Agent <cline-agent@users\.noreply\.github\.com>
 ```
 
 ## CodeBuddy
 
-**Identity**
+**Text attribution**
 
 ```regex
 CodeBuddy
@@ -145,7 +194,14 @@ CodeBuddy(?: Code)? <noreply@codebuddy\.dev>
 
 ## Codegen
 
-**Identity**
+**Author**
+
+```regex
+codegen-sh\[bot\]
+codegen-sh\[bot\] <131295404\+codegen-sh\[bot\]@users\.noreply\.github\.com>
+```
+
+**Text attribution**
 
 ```regex
 codegen-sh\[bot\]
@@ -154,10 +210,18 @@ codegen-sh\[bot\] <131295404\+codegen-sh\[bot\]@users\.noreply\.github\.com>
 
 ## Codex
 
-**Identity**
+**Author**
+
+```regex
+Codex <codex@openai\.com>
+OpenAI Codex <codex@openai\.com>
+```
+
+**Text attribution**
 
 ```regex
 Codex
+codex-cli
 OpenAI Codex
 Codex <codex@openai\.com>
 Codex <noreply@openai\.com>
@@ -179,20 +243,44 @@ OpenAI Codex <noreply@openai\.com>
 
 ## Continue
 
-**Identity**
+**Author**
+
+```regex
+Continue <noreply@continue\.dev>
+continue\[bot\]
+continue\[bot\] <(?:230936708\+)?continue\[bot\]@users\.noreply\.github\.com>
+```
+
+**Text attribution**
 
 ```regex
 Continue
 Continue <noreply@continue\.dev>
+continue\[bot\]
+continue\[bot\] <(?:230936708\+)?continue\[bot\]@users\.noreply\.github\.com>
 ```
 
 ## Copilot
 
-**Identity**
+**Author**
 
 ```regex
 copilot-swe-agent\[bot\]
+copilot-swe-agent\[bot\] <198982749\+Copilot@users\.noreply\.github\.com>
 Copilot <[0-9]+\+Copilot@users\.noreply\.github\.com>
+Copilot <copilot@github\.com>
+GitHub Copilot <copilot@github\.com>
+```
+
+**Text attribution**
+
+```regex
+copilot-swe-agent\[bot\]
+copilot-swe-agent\[bot\] <198982749\+Copilot@users\.noreply\.github\.com>
+Copilot <[0-9]+\+Copilot@users\.noreply\.github\.com>
+Copilot <noreply@github\.com>
+Copilot App <223556219\+Copilot@users\.noreply\.github\.com>
+Copilot Workspace
 Copilot <copilot@github\.com>
 GitHub Copilot <copilot@github\.com>
 GitHub Copilot
@@ -206,7 +294,7 @@ GitHub Copilot
 
 ## Crush
 
-**Identity**
+**Text attribution**
 
 ```regex
 Crush
@@ -215,13 +303,22 @@ Crush <crush@charm\.land>
 
 ## Cursor
 
-**Identity**
+**Author**
 
 ```regex
-Cursor
 Cursor Agent <cursoragent@cursor\.com>
+Cursor Agent <agent@cursor\.com>
 Cursor <cursoragent@cursor\.com>
 cursoragent
+```
+
+**Text attribution**
+
+```regex
+Cursor(?!\s+Bugbot\b)
+Cursor Agent <cursoragent@cursor\.com>
+Cursor Agent <agent@cursor\.com>
+Cursor <cursoragent@cursor\.com>
 ```
 
 **Branch**
@@ -232,7 +329,7 @@ cursoragent
 
 ## DeepSeek Harness
 
-**Identity**
+**Text attribution**
 
 ```regex
 DeepSeek Harness
@@ -241,7 +338,15 @@ DeepSeek Harness <deepseek-harness@users\.noreply\.github\.com>
 
 ## Devin
 
-**Identity**
+**Author**
+
+```regex
+devin-ai-integration\[bot\]
+Devin(?: AI)? <158243242\+devin-ai-integration\[bot\]@users\.noreply\.github\.com>
+devin-ai-integration\[bot\] <158243242\+devin-ai-integration\[bot\]@users\.noreply\.github\.com>
+```
+
+**Text attribution**
 
 ```regex
 devin-ai-integration\[bot\]
@@ -258,27 +363,57 @@ devin-ai-integration\[bot\] <158243242\+devin-ai-integration\[bot\]@users\.norep
 
 ## Factory Droid
 
-**Identity**
+**Author**
 
 ```regex
 factory-droid\[bot\]
 factory-droid\[bot\] <138933559\+factory-droid\[bot\]@users\.noreply\.github\.com>
+factory-droid <138933559\+factory-droid\[bot\]@users\.noreply\.github\.com>
+factory-droid\[bot\] <factory-droid\[bot\]@users\.noreply\.github\.com>
+```
+
+**Text attribution**
+
+```regex
+factory-droid\[bot\]
+factory-droid\[bot\] <138933559\+factory-droid\[bot\]@users\.noreply\.github\.com>
+factory-droid <138933559\+factory-droid\[bot\]@users\.noreply\.github\.com>
+factory-droid\[bot\] <factory-droid\[bot\]@users\.noreply\.github\.com>
 ```
 
 ## Gemini
 
-**Identity**
+**Author**
 
 ```regex
-gemini-code-assist\[bot\]
+Gemini CLI <gemini-cli@google\.com>
+Gemini Code Assist <176961590\+gemini-code-assist\[bot\]@users\.noreply\.github\.com>
 gemini-code-assist\[bot\] <176961590\+gemini-code-assist\[bot\]@users\.noreply\.github\.com>
+Gemini <176961590\+gemini-code-assist\[bot\]@users\.noreply\.github\.com>
+gemini-code-assist\[bot\] <gemini-code-assist\[bot\]@users\.noreply\.github\.com>
+Gemini <gemini-code-assist\[bot\]@users\.noreply\.github\.com>
+```
+
+**Text attribution**
+
+```regex
+gemini-code-assist(?!\[bot\])
+gemini-code-assist <200291788\+gemini-code-assist@users\.noreply\.github\.com>
+gemini-code-assist <gemini-code-assist@google\.com>
+gemini-code-assist\[bot\]
+Gemini Code Assist <176961590\+gemini-code-assist\[bot\]@users\.noreply\.github\.com>
+gemini-code-assist\[bot\] <176961590\+gemini-code-assist\[bot\]@users\.noreply\.github\.com>
+Gemini <176961590\+gemini-code-assist\[bot\]@users\.noreply\.github\.com>
+gemini-code-assist\[bot\] <gemini-code-assist\[bot\]@users\.noreply\.github\.com>
+Gemini <gemini-code-assist\[bot\]@users\.noreply\.github\.com>
+gemini-code-assist <gemini-code-assist\[bot\]@users\.noreply\.github\.com>
 Gemini CLI
 Gemini CLI <gemini-cli@google\.com>
 ```
 
 ## Goose
 
-**Identity**
+**Text attribution**
 
 ```regex
 Goose
@@ -286,7 +421,14 @@ Goose
 
 ## Gru
 
-**Identity**
+**Author**
+
+```regex
+gru-agent\[bot\]
+gru-agent\[bot\] <185149714\+gru-agent\[bot\]@users\.noreply\.github\.com>
+```
+
+**Text attribution**
 
 ```regex
 gru-agent\[bot\]
@@ -295,7 +437,7 @@ gru-agent\[bot\] <185149714\+gru-agent\[bot\]@users\.noreply\.github\.com>
 
 ## Huawei CodeArts
 
-**Identity**
+**Text attribution**
 
 ```regex
 CodeArts Agent
@@ -303,7 +445,7 @@ CodeArts Agent
 
 ## iFlow CLI
 
-**Identity**
+**Text attribution**
 
 ```regex
 iFlow CLI
@@ -311,7 +453,14 @@ iFlow CLI
 
 ## Jules
 
-**Identity**
+**Author**
+
+```regex
+google-labs-jules\[bot\]
+google-labs-jules\[bot\] <161369871\+google-labs-jules\[bot\]@users\.noreply\.github\.com>
+```
+
+**Text attribution**
 
 ```regex
 google-labs-jules\[bot\]
@@ -322,46 +471,70 @@ Jules \(Google\)
 
 ## Junie
 
-**Identity**
+**Author**
 
 ```regex
 jetbrains-junie\[bot\]
 jetbrains-junie\[bot\] <(?:201638009\+)?jetbrains-junie\[bot\]@users\.noreply\.github\.com>
+```
+
+**Text attribution**
+
+```regex
 Junie <junie@jetbrains\.com>
 Junie
 ```
 
 ## Kilo Code
 
-**Identity**
+**Author**
 
 ```regex
 kilo-code-bot\[bot\]
+kilo-code-bot\[bot\] <240665456\+kilo-code-bot\[bot\]@users\.noreply\.github\.com>
 kiloconnect\[bot\]
 kiloconnect\[bot\] <240665456\+kiloconnect\[bot\]@users\.noreply\.github\.com>
+kiloconnect\[bot\] <kiloconnect\[bot\]@users\.noreply\.github\.com>
+```
+
+**Text attribution**
+
+```regex
+kilo-code-bot\[bot\]
+kilo-code-bot\[bot\] <240665456\+kilo-code-bot\[bot\]@users\.noreply\.github\.com>
+kiloconnect\[bot\]
+kiloconnect\[bot\] <240665456\+kiloconnect\[bot\]@users\.noreply\.github\.com>
+kiloconnect\[bot\] <kiloconnect\[bot\]@users\.noreply\.github\.com>
 Kilo Code
 ```
 
 ## Kimi Code
 
-**Identity**
+**Text attribution**
 
 ```regex
 Kimi Code
 Kimi Code CLI
-Kimi(?: Code)? <noreply@moonshot\.cn>
+Kimi(?: Code)? <noreply@moonshot\.(?:cn|ai)>
 ```
 
 ## Kiro
 
-**Identity**
+**Author**
+
+```regex
+Kiro Agent <244629292\+kiro-agent@users\.noreply\.github\.com>
+kiro-agent\[bot\]
+kiro-agent\[bot\] <245459735\+kiro-agent\[bot\]@users\.noreply\.github\.com>
+```
+
+**Text attribution**
 
 ```regex
 Kiro
 Kiro CLI
+kiro-cli
 Kiro Agent <244629292\+kiro-agent@users\.noreply\.github\.com>
-kiro-agent\[bot\]
-kiro-agent\[bot\] <245459735\+kiro-agent\[bot\]@users\.noreply\.github\.com>
 ```
 
 **Branch**
@@ -372,11 +545,26 @@ kiro-agent\[bot\] <245459735\+kiro-agent\[bot\]@users\.noreply\.github\.com>
 
 ## LangChain Open SWE
 
-**Identity**
+**Author**
 
 ```regex
 open-swe\[bot\]
-open-swe\[bot\] <(?:215916821\+)?open-swe\[bot\]@users\.noreply\.github\.com>
+open-swe-dev\[bot\]
+open-swe\[bot\] <215916821\+open-swe\[bot\]@users\.noreply\.github\.com>
+open-swe\[bot\] <open-swe@users\.noreply\.github\.com>
+open-swe-dev\[bot\] <214404619\+open-swe-dev\[bot\]@users\.noreply\.github\.com>
+open-swe-dev\[bot\] <open-swe-dev@users\.noreply\.github\.com>
+```
+
+**Text attribution**
+
+```regex
+open-swe\[bot\]
+open-swe-dev\[bot\]
+open-swe\[bot\] <215916821\+open-swe\[bot\]@users\.noreply\.github\.com>
+open-swe\[bot\] <open-swe@users\.noreply\.github\.com>
+open-swe-dev\[bot\] <214404619\+open-swe-dev\[bot\]@users\.noreply\.github\.com>
+open-swe-dev\[bot\] <open-swe-dev@users\.noreply\.github\.com>
 Open SWE
 ```
 
@@ -394,7 +582,7 @@ Open SWE
 
 ## Letta Code
 
-**Identity**
+**Text attribution**
 
 ```regex
 Letta Code
@@ -403,17 +591,26 @@ Letta(?: Code)? <noreply@letta\.com>
 
 ## Lovable
 
-**Identity**
+**Author**
 
 ```regex
 lovable-dev\[bot\]
 gpt-engineer-app\[bot\]
 gpt-engineer-app\[bot\] <159125892\+gpt-engineer-app\[bot\]@users\.noreply\.github\.com>
+Lovable <159125892\+lovable-dev\[bot\]@users\.noreply\.github\.com>
+```
+
+**Text attribution**
+
+```regex
+gpt-engineer-app\[bot\]
+gpt-engineer-app\[bot\] <159125892\+gpt-engineer-app\[bot\]@users\.noreply\.github\.com>
+Lovable <159125892\+lovable-dev\[bot\]@users\.noreply\.github\.com>
 ```
 
 ## Microsoft Amplifier
 
-**Identity**
+**Text attribution**
 
 ```regex
 Amplifier <240397093\+microsoft-amplifier@users\.noreply\.github\.com>
@@ -422,7 +619,7 @@ Amplifier
 
 ## MiMo Code
 
-**Identity**
+**Text attribution**
 
 ```regex
 MiMo Code
@@ -431,7 +628,7 @@ MiMo-Code <noreply@mimo\.xiaomi\.com>
 
 ## MiniMax Code
 
-**Identity**
+**Text attribution**
 
 ```regex
 MiniMax Code
@@ -440,18 +637,23 @@ MiniMax Code <noreply@minimax\.io>
 
 ## Mistral Vibe
 
-**Identity**
+**Author**
 
 ```regex
 mistral-vibe
 Vibe Nuage Agent <vibe@mistral\.ai>
+```
+
+**Text attribution**
+
+```regex
 Mistral Vibe <vibe@mistral\.ai>
 Mistral Vibe
 ```
 
 ## Ona
 
-**Identity**
+**Text attribution**
 
 ```regex
 Ona <no-reply@ona\.com>
@@ -459,13 +661,19 @@ Ona <no-reply@ona\.com>
 
 ## OpenCode
 
-**Identity**
+**Author**
+
+```regex
+opencode-agent\[bot\]
+opencode-agent\[bot\] <opencode-agent\[bot\]@users\.noreply\.github\.com>
+opencode-agent\[bot\] <219766164\+opencode-agent\[bot\]@users\.noreply\.github\.com>
+```
+
+**Text attribution**
 
 ```regex
 OpenCode
 OpenCode <noreply@opencode\.ai>
-opencode-agent\[bot\]
-opencode-agent\[bot\] <opencode-agent\[bot\]@users\.noreply\.github\.com>
 ```
 
 **Branch**
@@ -476,21 +684,28 @@ opencode-agent\[bot\] <opencode-agent\[bot\]@users\.noreply\.github\.com>
 
 ## OpenHands
 
-**Identity**
+**Author**
 
 ```regex
 openhands-agent
+OpenHands <openhands@all-hands\.dev>
+```
+
+**Text attribution**
+
+```regex
 OpenHands <openhands@all-hands\.dev>
 OpenHands
 ```
 
 ## Pi
 
-**Identity**
+**Text attribution**
 
 ```regex
 Pi
 Pi Coding Agent
+pi-coding-agent
 ```
 
 ## Plandex
@@ -503,7 +718,7 @@ Pi Coding Agent
 
 ## Qoder
 
-**Identity**
+**Text attribution**
 
 ```regex
 Qoder
@@ -512,7 +727,7 @@ Qoder <noreply@qoder\.com>
 
 ## Qwen Code
 
-**Identity**
+**Text attribution**
 
 ```regex
 Qwen Code
@@ -522,10 +737,15 @@ Qwen Code <qwen@tongyi\.aliyun\.com>
 
 ## Replit Agent
 
-**Identity**
+**Author**
 
 ```regex
 replit-agent
+```
+
+**Text attribution**
+
+```regex
 Replit
 ```
 
@@ -537,7 +757,13 @@ Replit
 
 ## Roo Code
 
-**Identity**
+**Author**
+
+```regex
+Roo Code <roomote@roocode\.com>
+```
+
+**Text attribution**
 
 ```regex
 Roo Code <roomote@roocode\.com>
@@ -545,19 +771,33 @@ Roo Code <roomote@roocode\.com>
 
 ## Roomote
 
-**Identity**
+**Author**
 
 ```regex
 roomote-roomote
 roomote\[bot\] <219738659\+roomote\[bot\]@users\.noreply\.github\.com>
+roomote\[bot\] <263205322\+roomote\[bot\]@users\.noreply\.github\.com>
+```
+
+**Text attribution**
+
+```regex
+roomote\[bot\] <219738659\+roomote\[bot\]@users\.noreply\.github\.com>
+roomote\[bot\] <263205322\+roomote\[bot\]@users\.noreply\.github\.com>
 ```
 
 ## Sentry Seer
 
-**Identity**
+**Author**
 
 ```regex
 seer-by-sentry\[bot\]
+seer-by-sentry\[bot\] <157164994\+seer-by-sentry\[bot\]@users\.noreply\.github\.com>
+```
+
+**Text attribution**
+
+```regex
 seer-by-sentry\[bot\] <157164994\+seer-by-sentry\[bot\]@users\.noreply\.github\.com>
 ```
 
@@ -569,7 +809,7 @@ seer-by-sentry\[bot\] <157164994\+seer-by-sentry\[bot\]@users\.noreply\.github\.
 
 ## Sketch
 
-**Identity**
+**Text attribution**
 
 ```regex
 Sketch <hello@sketch\.dev>
@@ -577,11 +817,18 @@ Sketch <hello@sketch\.dev>
 
 ## Sweep
 
-**Identity**
+**Author**
 
 ```regex
 sweep-ai\[bot\]
 sweep-ai-deprecated\[bot\]
+sweep-ai\[bot\] <128439645\+sweep-ai\[bot\]@users\.noreply\.github\.com>
+sweep-ai-deprecated\[bot\] <128439645\+sweep-ai-deprecated\[bot\]@users\.noreply\.github\.com>
+```
+
+**Text attribution**
+
+```regex
 sweep-ai\[bot\] <128439645\+sweep-ai\[bot\]@users\.noreply\.github\.com>
 ```
 
@@ -593,10 +840,12 @@ sweep-ai\[bot\] <128439645\+sweep-ai\[bot\]@users\.noreply\.github\.com>
 
 ## Trae
 
-**Identity**
+**Text attribution**
 
 ```regex
 traeagent <traeagent@users\.noreply\.github\.com>
+TRAE CLI <noreply@bytedance\.com>
+Trae AI <trae-ai@users\.noreply\.github\.com>
 ```
 
 **Branch**
@@ -607,7 +856,7 @@ traeagent <traeagent@users\.noreply\.github\.com>
 
 ## Verdent
 
-**Identity**
+**Text attribution**
 
 ```regex
 Verdent
@@ -616,7 +865,7 @@ Verdent(?: AI)? <(?:verdent|noreply)@verdent\.ai>
 
 ## Warp
 
-**Identity**
+**Author**
 
 ```regex
 Warp <agent@warp\.dev>
@@ -625,9 +874,17 @@ oz-agent
 Oz <oz-agent@warp\.dev>
 ```
 
+**Text attribution**
+
+```regex
+Warp <agent@warp\.dev>
+Warp Agent <agent@warp\.dev>
+Oz <oz-agent@warp\.dev>
+```
+
 ## Windsurf
 
-**Identity**
+**Text attribution**
 
 ```regex
 Windsurf
@@ -636,7 +893,7 @@ windsurf-bot\[bot\] <189301087\+windsurf-bot\[bot\]@users\.noreply\.github\.com>
 
 ## ZCode
 
-**Identity**
+**Text attribution**
 
 ```regex
 ZCode <noreply@z\.ai>

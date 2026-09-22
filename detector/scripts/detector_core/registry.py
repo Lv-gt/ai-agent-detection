@@ -6,6 +6,7 @@ from .util import ROOT, read_json
 
 
 _WORD = r"A-Za-z0-9_"
+_TEXT_BREAK = re.compile(r"(?:[.!?;](?=[ \t]|$)|[。！？；])")
 
 
 class Registry:
@@ -20,13 +21,12 @@ class Registry:
             "verb_patterns": list(grammar.get("verb_patterns", [])),
             "connectors": list(grammar.get("connectors", [])),
             "hyphenated_prefixes": list(grammar.get("hyphenated_prefixes", [])),
-            "bridge_patterns": list(grammar.get("bridge_patterns", [])),
         }
         self.attribution_prefix = self._compile_attribution_prefix()
-        self.bridge_pattern = self._compile_bridge_pattern()
 
         self.catalog = {}
-        self.identity_patterns = []
+        self.author_patterns = []
+        self.text_patterns = []
         self.metadata_patterns = {"branches": [], "labels": []}
         self.raw_message_patterns = []
 
@@ -39,15 +39,18 @@ class Registry:
 
             normalized = {
                 "name": tool,
-                "identity_patterns": list(dict.fromkeys(entry.get("identity_patterns", []))),
+                "author_patterns": list(dict.fromkeys(entry.get("author_patterns", []))),
+                "text_patterns": list(dict.fromkeys(entry.get("text_patterns", []))),
                 "branch_patterns": list(dict.fromkeys(entry.get("branch_patterns", []))),
                 "label_patterns": list(dict.fromkeys(entry.get("label_patterns", []))),
                 "raw_message_signatures": list(dict.fromkeys(entry.get("raw_message_signatures", []))),
             }
             self.catalog[tool] = normalized
 
-            for raw in normalized["identity_patterns"]:
-                self.identity_patterns.append((self._compile_fragment(raw), tool, raw))
+            for raw in normalized["author_patterns"]:
+                self.author_patterns.append((self._compile_fragment(raw), tool, raw))
+            for raw in normalized["text_patterns"]:
+                self.text_patterns.append((self._compile_fragment(raw), tool, raw))
             for raw in normalized["branch_patterns"]:
                 self.metadata_patterns["branches"].append((re.compile(raw, re.I), tool, raw))
             for raw in normalized["label_patterns"]:
@@ -71,23 +74,24 @@ class Registry:
             re.I,
         )
 
-    def _compile_bridge_pattern(self):
-        bridges = self.grammar["bridge_patterns"]
-        if not bridges:
-            return None
-        return re.compile(rf"(?:{'|'.join(bridges)})(?![{_WORD}])", re.I)
-
     def _validate_counts(self):
         declared = self.rules.get("counts") or {}
         actual = {
             "agents": len(self.catalog),
-            "identity": len(self.identity_patterns),
+            "author": len(self.author_patterns),
+            "text": len(self.text_patterns),
+            "author_text_overlap": sum(
+                len(set(entry["author_patterns"]) & set(entry["text_patterns"]))
+                for entry in self.catalog.values()
+            ),
             "branch": len(self.metadata_patterns["branches"]),
             "label": len(self.metadata_patterns["labels"]),
             "raw_message_signature": len(self.raw_message_patterns),
         }
-        actual["agent_specific"] = actual["identity"] + actual["branch"] + actual["label"]
-        actual["complete_executable_inventory"] = actual["agent_specific"] + actual["raw_message_signature"]
+        actual["complete_executable_inventory"] = (
+            actual["author"] + actual["text"] + actual["branch"] + actual["label"]
+            + actual["raw_message_signature"]
+        )
         for key, value in actual.items():
             if key in declared and declared[key] != value:
                 raise ValueError(f"Rule count mismatch for {key}: declared={declared[key]} actual={value}")
@@ -95,8 +99,8 @@ class Registry:
 
     @staticmethod
     def _compile_fragment(raw):
-        """Compile one shared Identity regex with ASCII token boundaries."""
-        return re.compile(rf"(?<![{_WORD}])(?:{raw})(?![{_WORD}])", re.I)
+        """Compile one identity fragment without domain, hyphen-word or Unicode collisions."""
+        return re.compile(rf"(?<![\w@.\-])(?:{raw})(?![\w@]|[.\-]\w)", re.I)
 
     @staticmethod
     def render_identity(*, login="", name="", email=""):
@@ -107,40 +111,32 @@ class Registry:
     def _sorted(matches):
         return sorted(matches, key=lambda x: (x[0], x[2], x[3], x[1]))
 
-    def identity_matches(self, value, *, start_only=False):
-        """Match the same Identity table against native identities or an extracted target."""
+    def author_matches(self, value):
+        """Scan the rendered native-author identity with the Author-side table."""
         hits = []
         value = value or ""
-        for pattern, tool, raw in self.identity_patterns:
-            if start_only:
-                match = pattern.match(value)
-                if match:
-                    hits.append((tool, raw, match.start(), match.end()))
-            else:
-                for match in pattern.finditer(value):
-                    hits.append((tool, raw, match.start(), match.end()))
+        for pattern, tool, raw in self.author_patterns:
+            for match in pattern.finditer(value):
+                hits.append((tool, raw, match.start(), match.end()))
+        return self._sorted(hits)
+
+    def text_matches(self, value):
+        """Search one bounded attribution segment with text-side evidence only."""
+        hits = []
+        for pattern, tool, raw in self.text_patterns:
+            for match in pattern.finditer(value or ""):
+                hits.append((tool, raw, match.start(), match.end()))
         return self._sorted(hits)
 
     def attribution_targets(self, line):
-        """Yield (target, prefix, target_start) for every attribution prefix in one line.
-
-        The optional colon and whitespace are matcher syntax, not rule-registry fields.
-        A configured bridge is consumed before the target is defined.
-        """
+        """Yield the bounded text segment following each attribution prefix."""
         line = line or ""
         for prefix in self.attribution_prefix.finditer(line):
             pos = prefix.end()
-            separator = re.match(r"[ \t]*:?[ \t]*", line[pos:])
-            pos += separator.end()
-
-            if self.bridge_pattern is not None:
-                bridge = self.bridge_pattern.match(line, pos)
-                if bridge:
-                    pos = bridge.end()
-                    spaces = re.match(r"[ \t]*", line[pos:])
-                    pos += spaces.end()
-
             target = line[pos:]
+            boundary = _TEXT_BREAK.search(target)
+            if boundary is not None:
+                target = target[:boundary.start()]
             if target:
                 yield target, prefix.group(0), pos
 

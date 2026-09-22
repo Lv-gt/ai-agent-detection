@@ -6,9 +6,10 @@ import re
 # Representation-level normalization only. The raw source text remains in evidence.
 MARKDOWN_LINK = re.compile(r"\[([^\]\r\n]+)\]\(([^\)\r\n]+)\)")
 TARGET_EMPHASIS = re.compile(
-    r"^(?P<marker>\*{1,3}|_{1,3})(?P<text>.+?)(?P=marker)"
-    r"(?=$|[ \t.,;:!?()\[\]{}<>])"
+    r"(?<!\w)(?P<marker>\*{1,3}|_{1,3})(?P<text>.+?)(?P=marker)"
+    r"(?!\w)"
 )
+INLINE_CODE = re.compile(r"`+[^`\r\n]*`+")
 
 
 def normalize_text(line: str) -> str:
@@ -16,8 +17,9 @@ def normalize_text(line: str) -> str:
 
 
 def normalize_target(target: str) -> str:
-    """Remove finite outer Markdown emphasis without treating code spans as prose."""
-    return TARGET_EMPHASIS.sub(r"\g<text>", target or "", count=1)
+    """Normalize emphasis and mask complete Markdown inline-code spans."""
+    target = TARGET_EMPHASIS.sub(r"\g<text>", target or "")
+    return INLINE_CODE.sub(" ", target)
 
 
 class EvidenceScanner:
@@ -77,17 +79,17 @@ class EvidenceScanner:
 
     def identity(self, row, source, object_id, login_field, email_field, name_field,
                  actor_id=None, event_time=None):
-        """Scan one rendered PR/commit identity with the shared Identity table."""
+        """Scan one PR/commit author identity with the Author-side table."""
         rendered = self.registry.render_identity(
             login=row.get(login_field) or "",
             name=row.get(name_field) or "",
             email=row.get(email_field) or "",
         )
-        for tool, raw_pattern, _start, _end in self.registry.identity_matches(rendered):
+        for tool, raw_pattern, _start, _end in self.registry.author_matches(rendered):
             self.evidence(
                 tool, "identity", "identity", source, object_id, "author_identity", 0, rendered,
                 actor_id=actor_id, event_time=event_time,
-                detail=f"identity_pattern:{raw_pattern}",
+                detail=f"author_pattern:{raw_pattern}",
             )
 
     @staticmethod
@@ -116,13 +118,11 @@ class EvidenceScanner:
             line = normalize_text(raw_line)
             for target, prefix, _target_start in self.registry.attribution_targets(line):
                 normalized_target = normalize_target(target)
-                for tool, raw_pattern, _start, _end in self.registry.identity_matches(
-                    normalized_target, start_only=True
-                ):
+                for tool, raw_pattern, _start, _end in self.registry.text_matches(normalized_target):
                     self.evidence(
                         tool, "attribution", "identity", source, object_id, field, line_number, raw_line,
                         actor_id=actor_id, event_time=event_time,
-                        detail=f"identity_pattern:{raw_pattern};prefix:{prefix}",
+                        detail=f"text_pattern:{raw_pattern};prefix:{prefix}",
                     )
 
         if source == "commit" and field == "message":

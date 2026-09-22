@@ -129,7 +129,7 @@ def detect_one(c, target, scanner):
 
     scanner.begin({**t, **d, "target_author_id": t["expected_author_id"]})
 
-    # PR author uses the same shared Identity matcher as commit authors.
+    # PR and commit authors use the same native-author matcher.
     pr_actor_id = d["author_database_id"] if d["author_database_id"] is not None else t["expected_author_id"]
     scanner.identity(
         d, "pr", t["pr_id"], "author_login", "author_email", "author_name", pr_actor_id

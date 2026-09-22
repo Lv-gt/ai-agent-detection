@@ -50,7 +50,7 @@
 
 必需字段：`pr_id`、`name`。
 
-可选字段：`label_node_id`或`ordinal`。存在时用作逐条证据对象编号；均缺失时使用label名称，不影响检测。
+可选字段：`label_node_id` 或 `ordinal`。存在时用作逐条证据对象编号；均缺失时使用 label 名称，不影响检测。
 
 历史 label event 不是检测输入要求；即使数据库中存在相应表，它也不参与检测判断。
 
